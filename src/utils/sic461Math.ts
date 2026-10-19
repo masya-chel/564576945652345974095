@@ -488,19 +488,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
   const voutActual = Number((SIC46X_LIMITS.VREF * (1 + rfbTopStd.nominal / rfbBottomComp.nominal)).toFixed(3));
   const voutErrorPercent = Number((((voutActual - vout) / vout) * 100).toFixed(2));
 
-  const cffCalcPf = (1 / (2 * Math.PI * (rfbTopStd.nominal * 1000) * (crossoverFreqKhz * 1000))) * 1e12;
-  const cffStd = findNearestESeries(Math.max(10, cffCalcPf), 'E24');
-  const cffComp: StandardComponent = {
-    theoretical: Number(cffCalcPf.toFixed(1)),
-    nominal: cffStd.nominal,
-    unit: 'pF',
-    formatted: `${cffStd.nominal} pF`,
-    series: 'E24',
-    errorPercent: cffStd.errorPercent,
-    voltageRating: '≥ 25V',
-    packageRecommendation: '0603 C0G (параллельно RFB1)',
-  };
-
   const renBottomK = inputs.ren2Kohm > 0 ? inputs.ren2Kohm : 10.0;
   const renTopCalcK = renBottomK * (vinStartUvlo / SIC46X_LIMITS.VEN_RISING - 1);
   const renTopStd = findNearestESeries(
@@ -677,7 +664,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     rfbTop: rfbTopComp,
     voutActual,
     voutErrorPercent,
-    cffPf: cffComp,
     rfswKohm: rfswComponent,
     actualFswKhz,
     rmodeKohm: rmodeComponent,
@@ -737,7 +723,6 @@ export function generateBomList(inputs: CalculatorInputs, results: CalculatorRes
     { id: 'C_VDRV', designator: 'C_VDRV', pinNumber: 'Пин 16 (VDRV)', description: 'Блокировочный конденсатор питания драйверов затворов', category: 'Capacitor', nominalValue: `${results.cvdrvUf.nominal} µF`, calculatedValue: '4.7 µF', tolerance: '±10%', minRating: '≥ 10V X7R', recommendedFootprint: 'SMD 0805', notes: `${results.vdrvSupplySource}. Монтировать прямо у вывода 16 и PGND.` },
     { id: 'R_FB1', designator: 'R_FB1 (R_FB_H)', pinNumber: 'Пин 22 (VFB)', description: 'Верхний резистор делителя цепи обратной связи', category: 'Resistor', nominalValue: `${results.rfbTop.nominal} kΩ`, calculatedValue: `${results.rfbTop.theoretical} kΩ`, tolerance: '±1% (E96)', minRating: '1/16 W', recommendedFootprint: 'SMD 0603', notes: `Фактический Vout = ${results.voutActual} В (погрешность ${results.voutErrorPercent > 0 ? '+' : ''}${results.voutErrorPercent}%).` },
     { id: 'R_FB2', designator: 'R_FB2 (R_FB_L)', pinNumber: 'Пин 22 (VFB)', description: 'Нижний резистор делителя цепи обратной связи к AGND', category: 'Resistor', nominalValue: `${results.rfbBottom.nominal} kΩ`, calculatedValue: `${results.rfbBottom.theoretical} kΩ`, tolerance: '±1% (E96)', minRating: '1/16 W', recommendedFootprint: 'SMD 0603', notes: 'Подключается к аналоговой земле AGND (вывод 17/23).' },
-    { id: 'C_FF', designator: 'C_FF', pinNumber: 'Пин 22 (VFB)', description: 'Конденсатор опережения по фазе', category: 'Capacitor', nominalValue: `${results.cffPf?.nominal || 22} pF`, calculatedValue: `${results.cffPf?.theoretical || 22} pF`, tolerance: '±5%', minRating: '≥ 25V C0G / NP0', recommendedFootprint: 'SMD 0603', notes: 'Включается параллельно резистору R_FB1. Увеличивает запас по фазе до > 55°.' },
     { id: 'R_COMP', designator: 'R_COMP', pinNumber: 'Пин 21 (COMP)', description: 'Резистор частотной коррекции петли транскондуктивного ОУ', category: 'Resistor', nominalValue: `${results.rcompKohm.nominal} kΩ`, calculatedValue: `${results.rcompKohm.theoretical} kΩ`, tolerance: '±1%', minRating: '1/16 W', recommendedFootprint: 'SMD 0603', notes: `Задает полосу среза контура fc ≈ ${results.crossoverFreqKhz} кГц (gm = 300 µS).` },
     { id: 'C_COMP', designator: 'C_COMP', pinNumber: 'Пин 21 (COMP)', description: 'Конденсатор интегратора петли компенсации', category: 'Capacitor', nominalValue: `${results.ccompPf.nominal} pF`, calculatedValue: `${results.ccompPf.theoretical} pF`, tolerance: '±5%', minRating: '≥ 25V C0G / NP0', recommendedFootprint: 'SMD 0603', notes: 'Последовательно с R_COMP на AGND. Компенсирует полюс выходного LC фильтра.' },
     { id: 'R_X', designator: 'R_X', pinNumber: 'Пин 20 (VSNS)', description: 'Резистор цепи инжекции пилообразного напряжения', category: 'Resistor', nominalValue: `${results.rxKohm.nominal} kΩ`, calculatedValue: `${results.rxKohm.theoretical} kΩ`, tolerance: '±1%', minRating: '1/10 W (0603), Pdiss ≤ 25 мВт', recommendedFootprint: 'SMD 0603', notes: `Формирует наклон пилы для устойчивости COT. Vramp = ${results.vrampMv} мВ (норма: 100–900 мВ).` },

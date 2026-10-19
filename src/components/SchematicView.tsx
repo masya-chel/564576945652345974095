@@ -263,9 +263,9 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
         return {
           pin: 'Пин 22: VFB',
           title: 'Вход обратной связи по напряжению',
-          value: `R_FB_H = ${results.rfbTop.formatted}, R_FB_L = ${results.rfbBottom.formatted}, C_FF = ${results.cffPf?.formatted || '22 pF'}`,
+          value:  `R_FB_H = ${results.rfbTop.formatted}, R_FB_L = ${results.rfbBottom.formatted}` ,
           formula: 'Vout = Vref · (1 + R_FB_H / R_FB_L), Vref = 0.800 В',
-          detail: `Фактическое выходное напряжение: ${results.voutActual} В (погрешность ${results.voutErrorPercent > 0 ? '+' : ''}${results.voutErrorPercent}%). Конденсатор опережения C_FF, включенный параллельно верхнему резистору, повышает запас по фазе до > 55°.`,
+          detail:  `Фактическое выходное напряжение: ${results.voutActual} В (погрешность ${results.voutErrorPercent > 0 ? '+' : ''}${results.voutErrorPercent}%). Делитель задаёт Vout = Vref · (1 + R_FB_H / R_FB_L).` ,
           layoutNote: 'Вывод VFB является высокоомным чувствительным узлом. Дорожка от делителя к выводу 22 должна быть максимально короткой и экранирована земляным полигоном.',
         };
       case 'SS':
@@ -687,12 +687,6 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
 			<circle cx="190" cy="455" r="2.5" fill="#c084fc" />
 			<rect x="150" y="443" width="28" height="24" rx="2" fill="#1e293b" stroke="#c084fc" strokeWidth="1.5" />
 			<text x="164" y="437" textAnchor="middle" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">RFB1={results.rfbTop.formatted}</text>
-			<line x1="190" y1="455" x2="190" y2="467" stroke="#c084fc" strokeWidth="1.5" />
-			<line x1="190" y1="467" x2="178" y2="467" stroke="#c084fc" strokeWidth="1.5" />
-			<g transform="translate(164, 475)" className="text-slate-300"><use href="#cap-symbol" /></g>
-			<line x1="164" y1="483" x2="135" y2="483" stroke="#c084fc" strokeWidth="1.5" />
-			<line x1="135" y1="483" x2="135" y2="455" stroke="#c084fc" strokeWidth="1.5" />
-			<text x="164" y="493" textAnchor="middle" fill="#a78bfa" fontSize="8" fontFamily="JetBrains Mono">CFF={results.cffPf?.formatted}</text>
 			<line x1="150" y1="455" x2="120" y2="455" stroke="#c084fc" strokeWidth="1.5" />
 			<circle cx="120" cy="455" r="3" fill="#c084fc" />
 		  </g>

@@ -103,7 +103,6 @@ export interface CalculatorResults {
   rfbTop: StandardComponent;
   voutActual: number;
   voutErrorPercent: number;
-  cffPf?: StandardComponent;
   rfswKohm: StandardComponent;
   actualFswKhz: number;
   rmodeKohm: StandardComponent;
