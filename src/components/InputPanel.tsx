@@ -573,16 +573,22 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           </span>
           <div className="grid grid-cols-2 gap-2">
             <label className="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 hover:text-white">
-              <input
-                type="radio"
-                name="bootInputMode"
-                value="standard"
-                checked={inputs.bootInputMode === 'standard'}
-                onChange={() => onChange('bootInputMode', 'standard')}
-                className="accent-cyan-500 cursor-pointer"
-              />
-              <span>Стандарт Vishay</span>
-            </label>
+			  <input
+				type="radio"
+				name="bootInputMode"
+				value="standard"
+				checked={inputs.bootInputMode === 'standard'}
+				onChange={() => {
+				  onChange('bootInputMode', 'standard');
+				  // Автоматически подставляем стандартные значения из даташита
+				  const defaultRboot = (inputs.chipModel === 'SiC463' || inputs.chipModel === 'SiC464') ? 4.7 : 3.3;
+				  onChange('rbootOhm', defaultRboot);
+				  onChange('cbootNf', 100); // 100 нФ (0.1 мкФ)
+				}}
+				className="accent-cyan-500 cursor-pointer"
+			  />
+			  <span>Стандарт Vishay</span>
+			</label>
 
             <label className="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 hover:text-white">
               <input

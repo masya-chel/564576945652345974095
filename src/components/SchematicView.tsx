@@ -210,7 +210,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
         };
       case 'PHASE':
       case 'PIN_5_6':
-      case 'BOOT':
+      case 'BOOT': 
       case 'PIN_4':
         return {
           pin: 'Пины 4 (BOOT) и 5, 6 (PHASE1, PHASE2)',
@@ -228,7 +228,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
           detail: `Напряжение шины питания затворов (5.0 В). ${results.vdrvSupplySource}. Потери в кристалле: ${results.vdrvPowerLossW} Вт. В режимах Mode 3 и 4 при питании VDRV от внешней шины 5В (или от выхода Vout, если Vout=5В) полностью исключаются потери в линейном стабилизаторе, что дает выигрыш в КПД до 3-5% и снижает нагрев кристалла.`,
           layoutNote: 'Керамический конденсатор C_VDRV = 4.7 µF (X7R 10V+) монтируется прямо у вывода 16 и вывода 15 PGND с минимальной паразитной индуктивностью контура.',
         };
-      case 'COMP':
+      case 'COMP': 
       case 'PIN_21':
         return {
           pin: 'Пин 21: COMP',
@@ -243,9 +243,9 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
         return {
           pin: 'Пин 20: VSNS',
           title: 'Инжекция пилы для устойчивости COT (Constant On-Time)',
-          value: `Rx = ${results.rxKohm.formatted}, Cx = ${results.cxNf.formatted}, Cy = ${results.cyNf.formatted} → Vramp = ${results.vrampMv} мВ`,
+          value: `Rx = ${results.rxKohm.formatted}, Cx = ${results.cxNf.formatted}, Cy = ${results.cyNf.formatted} → Vramp = ${results.vrampMinMv}..${results.vrampMaxMv} мВ`,
           formula: 'Vramp = ((Vin - Vout) · Vout) / (Vin · fsw · Cx · Rx)',
-          detail: `Поскольку современные керамические конденсаторы MLCC имеют сверхнизкий ESR, естественной пилы на выходе недостаточно для работы компаратора COT. Цепь Rx (от узла SW), Cx и Cy инжектирует внутреннюю синтезированную пилу в узел VSNS. Оптимальный диапазон амплитуды: 100 .. 900 мВ (расчетное: ${results.vrampMv} мВ).`,
+          detail: `Поскольку современные керамические конденсаторы MLCC имеют сверхнизкий ESR, естественной пилы на выходе недостаточно для работы компаратора COT. Цепь Rx (от узла SW), Cx и Cy инжектирует внутреннюю синтезированную пилу в узел VSNS. Рекомендуемый диапазон амплитуды: 100..900 мВ. Текущий диапазон: ${results.vrampMinMv}..${results.vrampMaxMv} мВ (при Vin = ${inputs.vinMin}..${inputs.vinMax} В).`,
           layoutNote: 'Резистор Rx рассеивает до 25 мВт (типоразмер 0603). Сигнал VSNS снимается кельвиновским подключением.',
         };
       case 'L1':
@@ -333,7 +333,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
           detail: `Суммарный RMS ток через конденсаторы: ${results.cinRmsA} A. Рабочее напряжение ≥ ${Math.ceil(inputs.vinMax * 1.35)} В.`,
           layoutNote: 'Устанавливать непосредственно между силовыми полигонами VIN и выводами 11-15 PGND с минимальной паразитной индуктивностью контура импульсного тока.',
         };
-      case 'COUT':
+      case 'COUT': 
         return {
           pin: 'Выходная батарея COUT',
           title: 'Выходные сглаживающие конденсаторы',
@@ -440,10 +440,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
         <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 bg-slate-950/85 backdrop-blur-md border border-slate-700/80 rounded-lg p-1.5 shadow-xl select-none">
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleZoomOut();
-            }}
+            onClick={(e) => { e.stopPropagation(); handleZoomOut(); }}
             title="Уменьшить масштаб (Колесико вниз)"
             className="p-1.5 hover:bg-slate-800 rounded text-slate-300 hover:text-white transition-colors"
           >
@@ -451,10 +448,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
           </button>
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleResetZoom();
-            }}
+            onClick={(e) => { e.stopPropagation(); handleResetZoom(); }}
             title="Сбросить масштаб (100%)"
             className="px-2 py-0.5 text-xs font-mono font-bold text-cyan-300 hover:bg-slate-800 rounded transition-colors"
           >
@@ -462,10 +456,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
           </button>
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleZoomIn();
-            }}
+            onClick={(e) => { e.stopPropagation(); handleZoomIn(); }}
             title="Увеличить масштаб (Колесико вверх)"
             className="p-1.5 hover:bg-slate-800 rounded text-slate-300 hover:text-white transition-colors"
           >
@@ -474,10 +465,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
           <div className="h-4 w-px bg-slate-800 mx-0.5" />
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleResetZoom();
-            }}
+            onClick={(e) => { e.stopPropagation(); handleResetZoom(); }}
             title="Сбросить позицию и масштаб"
             className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-slate-200 transition-colors"
           >
@@ -498,478 +486,307 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
           }}
           className="w-full h-full flex items-center justify-center pointer-events-auto"
         >
-          <svg
-            viewBox="0 0 1140 700"
-            className="w-full max-w-[1140px] h-auto select-none font-sans"
-          >
-            <defs>
-              <linearGradient id="icGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#1e293b" />
-                <stop offset="100%" stopColor="#0f172a" />
-              </linearGradient>
-              <pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.5" />
-              </pattern>
-              <g id="cap-symbol">
-                <line x1="-6" y1="-3" x2="6" y2="-3" stroke="currentColor" strokeWidth="2" />
-                <line x1="-6" y1="3" x2="6" y2="3" stroke="currentColor" strokeWidth="2" />
-                <line x1="0" y1="-8" x2="0" y2="-3" stroke="currentColor" strokeWidth="1.5" />
-                <line x1="0" y1="3" x2="0" y2="8" stroke="currentColor" strokeWidth="1.5" />
-              </g>
-            </defs>
+        <svg viewBox="0 0 1140 700" className="w-full max-w-[1140px] h-auto select-none font-sans">
+		  <defs>
+			<linearGradient id="icGrad" x1="0" y1="0" x2="0" y2="1">
+			  <stop offset="0%" stopColor="#1e293b" />
+			  <stop offset="100%" stopColor="#0f172a" />
+			</linearGradient>
+			<pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+			  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1e293b" strokeWidth="0.5" />
+			</pattern>
+			{/* ЕДИНЫЙ СИМВОЛ КОНДЕНСАТОРА */}
+			<g id="cap-symbol">
+			  <line x1="-6" y1="-3" x2="6" y2="-3" stroke="currentColor" strokeWidth="2" />
+			  <line x1="-6" y1="3" x2="6" y2="3" stroke="currentColor" strokeWidth="2" />
+			  <line x1="0" y1="-8" x2="0" y2="-3" stroke="currentColor" strokeWidth="1.5" />
+			  <line x1="0" y1="3" x2="0" y2="8" stroke="currentColor" strokeWidth="1.5" />
+			</g>
+		  </defs>
 
-            <rect width="1140" height="700" fill="url(#smallGrid)" opacity="0.4" />
+		  <rect width="1140" height="700" fill="url(#smallGrid)" opacity="0.4" />
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('VSNS')}>
-              <path
-                d="M 760 220 L 760 38 L 75 38 L 75 355 L 100 355"
-                fill="none"
-                stroke="#38bdf8"
-                strokeWidth="1.5"
-                strokeDasharray="4 3"
-                opacity="0.85"
-              />
-              <rect x="350" y="28" width="160" height="18" rx="3" fill="#0f172a" stroke="#38bdf8" strokeWidth="1" />
-              <text x="430" y="41" textAnchor="middle" fill="#38bdf8" fontSize="9" fontFamily="JetBrains Mono">
-                SW импульсный узел → Rx (VSNS)
-              </text>
-            </g>
+		  {/* Коридоры трассировки */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('VSNS')}>
+			<path d="M 760 220 L 760 38 L 75 38 L 75 355 L 100 355" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.85" />
+			<rect x="350" y="28" width="160" height="18" rx="3" fill="#0f172a" stroke="#38bdf8" strokeWidth="1" />
+			<text x="430" y="41" textAnchor="middle" fill="#38bdf8" fontSize="9" fontFamily="JetBrains Mono">SW импульсный узел → Rx (VSNS)</text>
+		  </g>
+		  <g className="cursor-pointer" onClick={() => handleItemClick('VFB')}>
+			<path d="M 120 455 L 120 665 L 1040 665 L 1040 225" fill="none" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.85" />
+			<rect x="740" y="655" width="180" height="18" rx="3" fill="#0f172a" stroke="#c084fc" strokeWidth="1" />
+			<text x="830" y="668" textAnchor="middle" fill="#c084fc" fontSize="9" fontFamily="JetBrains Mono">Обратная связь VOUT → RFB1 / Cy</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('VFB')}>
-              <path
-                d="M 120 455 L 120 665 L 1040 665 L 1040 225"
-                fill="none"
-                stroke="#c084fc"
-                strokeWidth="1.5"
-                strokeDasharray="4 3"
-                opacity="0.85"
-              />
-              <rect x="740" y="655" width="180" height="18" rx="3" fill="#0f172a" stroke="#c084fc" strokeWidth="1" />
-              <text x="830" y="668" textAnchor="middle" fill="#c084fc" fontSize="9" fontFamily="JetBrains Mono">
-                Обратная связь VOUT → RFB1 / Cy
-              </text>
-            </g>
+		  {/* Микросхема */}
+		  <g>
+			<rect x="380" y="70" width="320" height="520" rx="8" fill="url(#icGrad)" stroke="#0284c7" strokeWidth="2.5" />
+			<circle cx="400" cy="90" r="6" fill="#0284c7" opacity="0.8" />
+			<text x="540" y="275" textAnchor="middle" fill="#ffffff" fontWeight="bold" fontSize="16" letterSpacing="1">Vishay {inputs.chipModel || 'SiC461'}</text>
+			<text x="540" y="298" textAnchor="middle" fill="#38bdf8" fontSize="12" fontFamily="JetBrains Mono">microBUCK® 60V {results.maxRatedCurrentA}A Synchronous Buck</text>
+			<text x="540" y="318" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="JetBrains Mono">Корпус PowerPAK® MLP55-27L</text>
+			<text x="540" y="338" textAnchor="middle" fill="#34d399" fontSize="10" fontFamily="JetBrains Mono">Mode {results.detectedMode} • {results.actualFswKhz} кГц • Vref = 0.800В</text>
 
-            <g>
-              <rect
-                x="380"
-                y="70"
-                width="320"
-                height="520"
-                rx="8"
-                fill="url(#icGrad)"
-                stroke="#0284c7"
-                strokeWidth="2.5"
-              />
-              <circle cx="400" cy="90" r="6" fill="#0284c7" opacity="0.8" />
-              <text x="540" y="275" textAnchor="middle" fill="#ffffff" fontWeight="bold" fontSize="16" letterSpacing="1">
-                Vishay {inputs.chipModel || 'SiC461'}
-              </text>
-              <text x="540" y="298" textAnchor="middle" fill="#38bdf8" fontSize="12" fontFamily="JetBrains Mono">
-                microBUCK® 60V {results.maxRatedCurrentA}A Synchronous Buck
-              </text>
-              <text x="540" y="318" textAnchor="middle" fill="#64748b" fontSize="10" fontFamily="JetBrains Mono">
-                Корпус PowerPAK® MLP55-27L (стр. 10 даташита)
-              </text>
-              <text x="540" y="338" textAnchor="middle" fill="#34d399" fontSize="10" fontFamily="JetBrains Mono">
-                Mode {results.detectedMode} • {results.actualFswKhz} кГц • Vref = 0.800В
-              </text>
+			{/* Левые выводы */}
+			<g className="cursor-pointer" onClick={() => handleItemClick('VCIN')}><line x1="320" y1="100" x2="380" y2="100" stroke="#38bdf8" strokeWidth="2" /><text x="390" y="104" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">1: VCIN</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('PGOOD')}><line x1="320" y1="140" x2="380" y2="140" stroke="#94a3b8" strokeWidth="2" /><text x="390" y="144" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">2: PGOOD</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('EN')}><line x1="320" y1="180" x2="380" y2="180" stroke="#38bdf8" strokeWidth="2" /><text x="390" y="184" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">3: EN / UVLO</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('MODE')}><line x1="320" y1="225" x2="380" y2="225" stroke="#94a3b8" strokeWidth="2" /><text x="390" y="229" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">18: ULTRASONIC</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('SS')}><line x1="320" y1="265" x2="380" y2="265" stroke="#38bdf8" strokeWidth="2" /><text x="390" y="269" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">19: SS (5µA)</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('VSNS')}><line x1="320" y1="355" x2="380" y2="355" stroke="#38bdf8" strokeWidth="2" /><text x="390" y="359" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">20: VSNS (Пила)</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('COMP')}><line x1="320" y1="405" x2="380" y2="405" stroke="#34d399" strokeWidth="2" /><text x="390" y="409" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">21: COMP (gm)</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('VFB')}><line x1="320" y1="455" x2="380" y2="455" stroke="#c084fc" strokeWidth="2" /><text x="390" y="459" fill="#c084fc" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">22: VFB (0.8V)</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('FSW')}><line x1="320" y1="505" x2="380" y2="505" stroke="#38bdf8" strokeWidth="2" /><text x="390" y="509" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">24: fSW (Частота)</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('ILIMIT')}><line x1="320" y1="545" x2="380" y2="545" stroke="#fbbf24" strokeWidth="2" /><text x="390" y="549" fill="#fbbf24" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">25: ILIMIT</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('MODE')}><line x1="320" y1="575" x2="380" y2="575" stroke="#38bdf8" strokeWidth="2" /><text x="390" y="579" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">27: MODE</text></g>
 
-              <g className="cursor-pointer" onClick={() => handleItemClick('VCIN')}>
-                <line x1="320" y1="100" x2="380" y2="100" stroke="#38bdf8" strokeWidth="2" />
-                <text x="390" y="104" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">1: VCIN</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('PGOOD')}>
-                <line x1="320" y1="140" x2="380" y2="140" stroke="#94a3b8" strokeWidth="2" />
-                <text x="390" y="144" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">2: PGOOD</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('EN')}>
-                <line x1="320" y1="180" x2="380" y2="180" stroke="#38bdf8" strokeWidth="2" />
-                <text x="390" y="184" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">3: EN / UVLO</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('MODE')}>
-                <line x1="320" y1="225" x2="380" y2="225" stroke="#94a3b8" strokeWidth="2" />
-                <text x="390" y="229" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">18: ULTRASONIC</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('SS')}>
-                <line x1="320" y1="265" x2="380" y2="265" stroke="#38bdf8" strokeWidth="2" />
-                <text x="390" y="269" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">19: SS (5µA)</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('VSNS')}>
-                <line x1="320" y1="355" x2="380" y2="355" stroke="#38bdf8" strokeWidth="2" />
-                <text x="390" y="359" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">20: VSNS (Пила)</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('COMP')}>
-                <line x1="320" y1="405" x2="380" y2="405" stroke="#34d399" strokeWidth="2" />
-                <text x="390" y="409" fill="#34d399" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">21: COMP (gm)</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('VFB')}>
-                <line x1="320" y1="455" x2="380" y2="455" stroke="#c084fc" strokeWidth="2" />
-                <text x="390" y="459" fill="#c084fc" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">22: VFB (0.8V)</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('FSW')}>
-                <line x1="320" y1="505" x2="380" y2="505" stroke="#38bdf8" strokeWidth="2" />
-                <text x="390" y="509" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">24: fSW (Частота)</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('ILIMIT')}>
-                <line x1="320" y1="545" x2="380" y2="545" stroke="#fbbf24" strokeWidth="2" />
-                <text x="390" y="549" fill="#fbbf24" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">25: ILIMIT</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('MODE')}>
-                <line x1="320" y1="575" x2="380" y2="575" stroke="#38bdf8" strokeWidth="2" />
-                <text x="390" y="579" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">27: MODE</text>
-              </g>
+			{/* Правые выводы */}
+			<g className="cursor-pointer" onClick={() => handleItemClick('BOOT')}><line x1="700" y1="105" x2="760" y2="105" stroke="#fbbf24" strokeWidth="2.5" /><text x="690" y="109" textAnchor="end" fill="#fbbf24" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">4: BOOT</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('PHASE')}><line x1="700" y1="150" x2="760" y2="150" stroke="#fbbf24" strokeWidth="2.5" /><text x="690" y="154" textAnchor="end" fill="#fbbf24" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">5,6: PHASE1, 2</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('SW')}><line x1="700" y1="220" x2="780" y2="220" stroke="#38bdf8" strokeWidth="4" /><text x="690" y="224" textAnchor="end" fill="#38bdf8" fontSize="11" fontWeight="bold" fontFamily="JetBrains Mono">7-10: SW (Power)</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('VDRV')}><line x1="700" y1="380" x2="770" y2="380" stroke="#c084fc" strokeWidth="2.5" /><text x="690" y="384" textAnchor="end" fill="#c084fc" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">16: VDRV (5V Gate)</text></g>
+			<g className="cursor-pointer" onClick={() => handleItemClick('VDD')}><line x1="700" y1="470" x2="770" y2="470" stroke="#94a3b8" strokeWidth="2" /><text x="690" y="474" textAnchor="end" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">26: VDD (5V Bias)</text></g>
 
-              <g className="cursor-pointer" onClick={() => handleItemClick('BOOT')}>
-                <line x1="700" y1="105" x2="760" y2="105" stroke="#fbbf24" strokeWidth="2.5" />
-                <text x="690" y="109" textAnchor="end" fill="#fbbf24" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">4: BOOT</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('PHASE')}>
-                <line x1="700" y1="150" x2="760" y2="150" stroke="#fbbf24" strokeWidth="2.5" />
-                <text x="690" y="154" textAnchor="end" fill="#fbbf24" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">5,6: PHASE1, 2</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('SW')}>
-                <line x1="700" y1="220" x2="780" y2="220" stroke="#38bdf8" strokeWidth="4" />
-                <text x="690" y="224" textAnchor="end" fill="#38bdf8" fontSize="11" fontWeight="bold" fontFamily="JetBrains Mono">7-10: SW (Power)</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('VDRV')}>
-                <line x1="700" y1="380" x2="770" y2="380" stroke="#c084fc" strokeWidth="2.5" />
-                <text x="690" y="384" textAnchor="end" fill="#c084fc" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">16: VDRV (5V Gate)</text>
-              </g>
-              <g className="cursor-pointer" onClick={() => handleItemClick('VDD')}>
-                <line x1="700" y1="470" x2="770" y2="470" stroke="#94a3b8" strokeWidth="2" />
-                <text x="690" y="474" textAnchor="end" fill="#94a3b8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">26: VDD (5V Bias)</text>
-              </g>
+			{/* Нижние выводы */}
+			<line x1="470" y1="590" x2="470" y2="625" stroke="#64748b" strokeWidth="2" />
+			<text x="470" y="583" textAnchor="middle" fill="#64748b" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono">17, 23: AGND</text>
+			<line x1="610" y1="590" x2="610" y2="625" stroke="#0284c7" strokeWidth="4" />
+			<text x="610" y="583" textAnchor="middle" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">11-15: PGND</text>
+			<line x1="470" y1="625" x2="610" y2="625" stroke="#64748b" strokeWidth="1.5" strokeDasharray="3 3" />
+			<text x="540" y="642" textAnchor="middle" fill="#64748b" fontSize="9" fontFamily="JetBrains Mono">Точка соединения земель (Net-Tie Star Ground)</text>
+		  </g>
 
-              <line x1="470" y1="590" x2="470" y2="625" stroke="#64748b" strokeWidth="2" />
-              <text x="470" y="583" textAnchor="middle" fill="#64748b" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono">17, 23: AGND</text>
-              <line x1="610" y1="590" x2="610" y2="625" stroke="#0284c7" strokeWidth="4" />
-              <text x="610" y="583" textAnchor="middle" fill="#38bdf8" fontSize="10" fontWeight="bold" fontFamily="JetBrains Mono">11-15: PGND</text>
-              <line x1="470" y1="625" x2="610" y2="625" stroke="#64748b" strokeWidth="1.5" strokeDasharray="3 3" />
-              <text x="540" y="642" textAnchor="middle" fill="#64748b" fontSize="9" fontFamily="JetBrains Mono">
-                Точка соединения земель (Net-Tie Star Ground)
-              </text>
-            </g>
+		  {/* Входная часть */}
+		  <line x1="40" y1="70" x2="320" y2="70" stroke="#38bdf8" strokeWidth="3" />
+		  <circle cx="40" cy="70" r="4.5" fill="#38bdf8" />
+		  <text x="40" y="52" fill="#38bdf8" fontSize="13" fontWeight="bold">VIN ({inputs.vinNom}В)</text>
+		  <text x="40" y="65" fill="#64748b" fontSize="9" fontFamily="JetBrains Mono">{inputs.vinMin}В .. {inputs.vinMax}В</text>
 
-            <line x1="40" y1="70" x2="320" y2="70" stroke="#38bdf8" strokeWidth="3" />
-            <circle cx="40" cy="70" r="4.5" fill="#38bdf8" />
-            <text x="40" y="52" fill="#38bdf8" fontSize="13" fontWeight="bold">VIN ({inputs.vinNom}В)</text>
-            <text x="40" y="65" fill="#64748b" fontSize="9" fontFamily="JetBrains Mono">{inputs.vinMin}В .. {inputs.vinMax}В</text>
+		  {/* CIN */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('CIN')}>
+			<circle cx="95" cy="70" r="3.5" fill="#38bdf8" />
+			<line x1="95" y1="70" x2="95" y2="92" stroke="#38bdf8" strokeWidth="1.5" />
+			<g transform="translate(95, 112)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<line x1="95" y1="132" x2="95" y2="142" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="87" y1="142" x2="103" y2="142" stroke="#64748b" strokeWidth="2" />
+			<line x1="90" y1="145" x2="100" y2="145" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="93" y1="148" x2="97" y2="148" stroke="#64748b" strokeWidth="1" />
+			<text x="110" y="116" textAnchor="start" fill="#e2e8f0" fontSize="10" fontWeight="bold">CIN</text>
+			<text x="110" y="128" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">{results.cinQty}×{results.cinSingleUf}µF</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('CIN')}>
-              <circle cx="95" cy="70" r="3.5" fill="#38bdf8" />
-              <line x1="95" y1="70" x2="95" y2="92" stroke="#38bdf8" strokeWidth="1.5" />
-              <g transform="translate(95, 112)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <line x1="95" y1="132" x2="95" y2="142" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="87" y1="142" x2="103" y2="142" stroke="#64748b" strokeWidth="2" />
-              <line x1="90" y1="145" x2="100" y2="145" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="93" y1="148" x2="97" y2="148" stroke="#64748b" strokeWidth="1" />
-              <text x="110" y="116" textAnchor="start" fill="#e2e8f0" fontSize="10" fontWeight="bold">CIN</text>
-              <text x="110" y="128" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                {results.cinQty}×{results.cinSingleUf}µF
-              </text>
-            </g>
+		  {/* VCIN фильтр */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('VCIN')}>
+			<circle cx="250" cy="70" r="3" fill="#38bdf8" />
+			<line x1="250" y1="70" x2="250" y2="100" stroke="#94a3b8" strokeWidth="1.5" />
+			<line x1="250" y1="100" x2="320" y2="100" stroke="#38bdf8" strokeWidth="1.5" />
+			<rect x="242" y="75" width="16" height="18" fill="#1e293b" stroke="#94a3b8" strokeWidth="1.5" />
+			<text x="238" y="87" textAnchor="end" fill="#94a3b8" fontSize="8" fontFamily="JetBrains Mono">{results.rvcinOhm.formatted}</text>
+			<line x1="280" y1="100" x2="280" y2="110" stroke="#94a3b8" strokeWidth="1.5" />
+			<g transform="translate(280, 126)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<line x1="280" y1="142" x2="280" y2="144" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="274" y1="144" x2="286" y2="144" stroke="#64748b" strokeWidth="1.5" />
+			<text x="295" y="130" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">{results.cvcinUf.formatted}</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('VCIN')}>
-              <circle cx="250" cy="70" r="3" fill="#38bdf8" />
-              <line x1="250" y1="70" x2="250" y2="100" stroke="#94a3b8" strokeWidth="1.5" />
-              <line x1="250" y1="100" x2="320" y2="100" stroke="#38bdf8" strokeWidth="1.5" />
-              <rect x="242" y="75" width="16" height="18" fill="#1e293b" stroke="#94a3b8" strokeWidth="1.5" />
-              <text x="238" y="87" textAnchor="end" fill="#94a3b8" fontSize="8" fontFamily="JetBrains Mono">
-                {results.rvcinOhm.formatted}
-              </text>
-              <line x1="280" y1="100" x2="280" y2="110" stroke="#94a3b8" strokeWidth="1.5" />
-              <g transform="translate(280, 126)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <line x1="280" y1="142" x2="280" y2="144" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="274" y1="144" x2="286" y2="144" stroke="#64748b" strokeWidth="1.5" />
-              <text x="295" y="130" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                {results.cvcinUf.formatted}
-              </text>
-            </g>
+		  {/* PGOOD */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('PGOOD')}>
+			<line x1="280" y1="140" x2="320" y2="140" stroke="#94a3b8" strokeWidth="1.5" />
+			<line x1="280" y1="140" x2="280" y2="120" stroke="#94a3b8" strokeWidth="1.5" />
+			<rect x="272" y="120" width="16" height="18" fill="#1e293b" stroke="#94a3b8" strokeWidth="1.5" />
+			<line x1="280" y1="120" x2="280" y2="108" stroke="#94a3b8" strokeWidth="1.5" />
+			<circle cx="280" cy="108" r="2.5" fill="#94a3b8" />
+			<text x="295" y="132" textAnchor="start" fill="#94a3b8" fontSize="8" fontFamily="JetBrains Mono">R_PGOOD</text>
+			<text x="280" y="104" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="JetBrains Mono">+VDD</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('PGOOD')}>
-              <line x1="280" y1="140" x2="320" y2="140" stroke="#94a3b8" strokeWidth="1.5" />
-              <line x1="280" y1="140" x2="280" y2="120" stroke="#94a3b8" strokeWidth="1.5" />
-              <rect x="272" y="120" width="16" height="18" fill="#1e293b" stroke="#94a3b8" strokeWidth="1.5" />
-              <line x1="280" y1="120" x2="280" y2="108" stroke="#94a3b8" strokeWidth="1.5" />
-              <circle cx="280" cy="108" r="2.5" fill="#94a3b8" />
-              <text x="295" y="132" textAnchor="start" fill="#94a3b8" fontSize="8" fontFamily="JetBrains Mono">
-                R_PGOOD
-              </text>
-              <text x="280" y="104" textAnchor="middle" fill="#94a3b8" fontSize="8" fontFamily="JetBrains Mono">
-                +VDD
-              </text>
-            </g>
+		  {/* UVLO делитель */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('EN')}>
+			<circle cx="190" cy="70" r="3.5" fill="#38bdf8" />
+			<line x1="190" y1="70" x2="190" y2="95" stroke="#38bdf8" strokeWidth="1.5" />
+			<rect x="180" y="95" width="20" height="28" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
+			<text x="172" y="107" textAnchor="end" fill="#e2e8f0" fontSize="9" fontWeight="bold">REN1 (R_EN_H)</text>
+			<text x="172" y="119" textAnchor="end" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">{results.renTopKohm.formatted}</text>
+			<line x1="190" y1="123" x2="190" y2="180" stroke="#38bdf8" strokeWidth="1.5" />
+			<circle cx="190" cy="180" r="3.5" fill="#38bdf8" />
+			<line x1="190" y1="180" x2="320" y2="180" stroke="#38bdf8" strokeWidth="1.5" />
+			<line x1="190" y1="180" x2="190" y2="198" stroke="#38bdf8" strokeWidth="1.5" />
+			<rect x="180" y="198" width="20" height="28" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
+			<text x="172" y="210" textAnchor="end" fill="#e2e8f0" fontSize="9" fontWeight="bold">REN2 (R_EN_L)</text>
+			<text x="172" y="222" textAnchor="end" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">{results.renBottomKohm.formatted}</text>
+			<line x1="190" y1="226" x2="190" y2="242" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="182" y1="242" x2="198" y2="242" stroke="#64748b" strokeWidth="2" />
+			<line x1="185" y1="245" x2="195" y2="245" stroke="#64748b" strokeWidth="1.5" />
+			<text x="190" y="256" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('EN')}>
-              <circle cx="190" cy="70" r="3.5" fill="#38bdf8" />
-              <line x1="190" y1="70" x2="190" y2="95" stroke="#38bdf8" strokeWidth="1.5" />
-              <rect x="180" y="95" width="20" height="28" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
-              <text x="172" y="107" textAnchor="end" fill="#e2e8f0" fontSize="9" fontWeight="bold">REN1 (R_EN_H)</text>
-              <text x="172" y="119" textAnchor="end" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                {results.renTopKohm.formatted}
-              </text>
-              <line x1="190" y1="123" x2="190" y2="180" stroke="#38bdf8" strokeWidth="1.5" />
-              <circle cx="190" cy="180" r="3.5" fill="#38bdf8" />
-              <line x1="190" y1="180" x2="320" y2="180" stroke="#38bdf8" strokeWidth="1.5" />
-              <line x1="190" y1="180" x2="190" y2="198" stroke="#38bdf8" strokeWidth="1.5" />
-              <rect x="180" y="198" width="20" height="28" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
-              <text x="172" y="210" textAnchor="end" fill="#e2e8f0" fontSize="9" fontWeight="bold">REN2 (R_EN_L)</text>
-              <text x="172" y="222" textAnchor="end" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                {results.renBottomKohm.formatted}
-              </text>
-              <line x1="190" y1="226" x2="190" y2="242" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="182" y1="242" x2="198" y2="242" stroke="#64748b" strokeWidth="2" />
-              <line x1="185" y1="245" x2="195" y2="245" stroke="#64748b" strokeWidth="1.5" />
-              <text x="190" y="256" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
-            </g>
+		  {/* ULTRASONIC */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('MODE')}>
+			<line x1="250" y1="225" x2="320" y2="225" stroke="#94a3b8" strokeWidth="1.5" />
+			<circle cx="250" cy="225" r="3" fill="#94a3b8" />
+			<rect x="135" y="215" width="110" height="20" rx="3" fill="#1e293b" stroke="#64748b" strokeWidth="1" />
+			<text x="190" y="228" textAnchor="middle" fill={inputs.ultrasonicEnabled ? '#38bdf8' : '#94a3b8'} fontSize="8" fontFamily="JetBrains Mono">
+			  {inputs.ultrasonicEnabled ? '→ VDD (>25кГц)' : '→ AGND (выкл)'}
+			</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('MODE')}>
-              <line x1="250" y1="225" x2="320" y2="225" stroke="#94a3b8" strokeWidth="1.5" />
-              <circle cx="250" cy="225" r="3" fill="#94a3b8" />
-              <rect x="135" y="215" width="110" height="20" rx="3" fill="#1e293b" stroke="#64748b" strokeWidth="1" />
-              <text x="190" y="228" textAnchor="middle" fill={inputs.ultrasonicEnabled ? '#38bdf8' : '#94a3b8'} fontSize="8" fontFamily="JetBrains Mono">
-                {inputs.ultrasonicEnabled ? '→ VDD (>25кГц)' : '→ AGND (выкл)'}
-              </text>
-            </g>
+		  {/* SS */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('SS')}>
+			<line x1="320" y1="265" x2="260" y2="265" stroke="#38bdf8" strokeWidth="1.5" />
+			<g transform="translate(248, 265)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<line x1="248" y1="273" x2="216" y2="273" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="216" y1="265" x2="216" y2="281" stroke="#64748b" strokeWidth="2" />
+			<line x1="213" y1="268" x2="213" y2="278" stroke="#64748b" strokeWidth="1.5" />
+			<text x="260" y="257" textAnchor="start" fill="#e2e8f0" fontSize="9" fontWeight="bold">C_SS</text>
+			<text x="260" y="269" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">{results.cssNf.formatted} (Tss = {results.actualTssMs}мс)</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('SS')}>
-              <line x1="320" y1="265" x2="260" y2="265" stroke="#38bdf8" strokeWidth="1.5" />
-              <g transform="translate(248, 265)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <line x1="248" y1="273" x2="216" y2="273" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="216" y1="265" x2="216" y2="281" stroke="#64748b" strokeWidth="2" />
-              <line x1="213" y1="268" x2="213" y2="278" stroke="#64748b" strokeWidth="1.5" />
-              <text x="260" y="257" textAnchor="start" fill="#e2e8f0" fontSize="9" fontWeight="bold">C_SS</text>
-              <text x="260" y="269" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                {results.cssNf.formatted} (Tss = {results.actualTssMs}мс)
-              </text>
-            </g>
+		  {/* VSNS цепь */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('VSNS')}>
+			<line x1="320" y1="355" x2="240" y2="355" stroke="#38bdf8" strokeWidth="1.5" />
+			<circle cx="240" cy="355" r="3.5" fill="#38bdf8" />
+			<line x1="240" y1="355" x2="240" y2="362" stroke="#38bdf8" strokeWidth="1.5" />
+			<g transform="translate(240, 380)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<text x="255" y="384" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">Cy={results.cyNf.formatted}</text>
+			<line x1="240" y1="398" x2="240" y2="400" stroke="#c084fc" strokeWidth="1.5" />
+			<line x1="240" y1="400" x2="120" y2="400" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="3 2" />
+			<line x1="240" y1="355" x2="185" y2="355" stroke="#38bdf8" strokeWidth="1.5" />
+			<g transform="translate(172, 355)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<text x="172" y="347" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">Cx={results.cxNf.formatted}</text>
+			<line x1="160" y1="355" x2="130" y2="355" stroke="#38bdf8" strokeWidth="1.5" />
+			<rect x="100" y="344" width="30" height="22" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
+			<text x="115" y="338" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">Rx={results.rxKohm.formatted}</text>
+			<line x1="100" y1="355" x2="75" y2="355" stroke="#38bdf8" strokeWidth="1.5" />
+			<text x="150" y="380" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">Vramp = {results.vrampMinMv}..{results.vrampMaxMv} мВ (COT)</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('VSNS')}>
-              <line x1="320" y1="355" x2="240" y2="355" stroke="#38bdf8" strokeWidth="1.5" />
-              <circle cx="240" cy="355" r="3.5" fill="#38bdf8" />
-              <line x1="240" y1="355" x2="240" y2="362" stroke="#38bdf8" strokeWidth="1.5" />
-              <g transform="translate(240, 380)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <text x="255" y="384" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                Cy={results.cyNf.formatted}
-              </text>
-              <line x1="240" y1="398" x2="240" y2="400" stroke="#c084fc" strokeWidth="1.5" />
-              <line x1="240" y1="400" x2="120" y2="400" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="3 2" />
-              <line x1="240" y1="355" x2="185" y2="355" stroke="#38bdf8" strokeWidth="1.5" />
-              <g transform="translate(172, 355)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <text x="172" y="347" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                Cx={results.cxNf.formatted}
-              </text>
-              <line x1="160" y1="355" x2="130" y2="355" stroke="#38bdf8" strokeWidth="1.5" />
-              <rect x="100" y="344" width="30" height="22" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
-              <text x="115" y="338" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                Rx={results.rxKohm.formatted}
-              </text>
-              <line x1="100" y1="355" x2="75" y2="355" stroke="#38bdf8" strokeWidth="1.5" />
-              <text x="150" y="380" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">
-                Vramp = {results.vrampMv} мВ (COT)
-              </text>
-            </g>
+		  {/* COMP */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('COMP')}>
+			<line x1="320" y1="405" x2="265" y2="405" stroke="#34d399" strokeWidth="1.5" />
+			<rect x="238" y="394" width="27" height="22" rx="2" fill="#1e293b" stroke="#34d399" strokeWidth="1.5" />
+			<text x="251" y="388" textAnchor="middle" fill="#34d399" fontSize="8" fontFamily="JetBrains Mono">R={results.rcompKohm.nominal}k</text>
+			<line x1="238" y1="405" x2="210" y2="405" stroke="#34d399" strokeWidth="1.5" />
+			<g transform="translate(196, 405)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<text x="196" y="388" textAnchor="middle" fill="#34d399" fontSize="8" fontFamily="JetBrains Mono">C={results.ccompPf.nominal}pF</text>
+			<line x1="196" y1="413" x2="160" y2="413" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="160" y1="405" x2="160" y2="421" stroke="#64748b" strokeWidth="2" />
+			<text x="150" y="416" textAnchor="end" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('COMP')}>
-              <line x1="320" y1="405" x2="265" y2="405" stroke="#34d399" strokeWidth="1.5" />
-              <rect x="238" y="394" width="27" height="22" rx="2" fill="#1e293b" stroke="#34d399" strokeWidth="1.5" />
-              <text x="251" y="388" textAnchor="middle" fill="#34d399" fontSize="8" fontFamily="JetBrains Mono">
-                R={results.rcompKohm.nominal}k
-              </text>
-              <line x1="238" y1="405" x2="210" y2="405" stroke="#34d399" strokeWidth="1.5" />
-              <g transform="translate(196, 405)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <text x="196" y="388" textAnchor="middle" fill="#34d399" fontSize="8" fontFamily="JetBrains Mono">
-                C={results.ccompPf.nominal}pF
-              </text>
-              <line x1="196" y1="413" x2="160" y2="413" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="160" y1="405" x2="160" y2="421" stroke="#64748b" strokeWidth="2" />
-              <text x="150" y="416" textAnchor="end" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
-            </g>
+		  {/* VFB */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('VFB')}>
+			<line x1="320" y1="455" x2="240" y2="455" stroke="#c084fc" strokeWidth="1.5" />
+			<circle cx="240" cy="455" r="3.5" fill="#c084fc" />
+			<line x1="240" y1="455" x2="240" y2="467" stroke="#c084fc" strokeWidth="1.5" />
+			<rect x="228" y="467" width="24" height="26" rx="2" fill="#1e293b" stroke="#c084fc" strokeWidth="1.5" />
+			<text x="220" y="482" textAnchor="end" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">RFB2={results.rfbBottom.formatted}</text>
+			<line x1="240" y1="493" x2="240" y2="515" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="232" y1="515" x2="248" y2="515" stroke="#64748b" strokeWidth="2" />
+			<text x="240" y="526" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
+			<line x1="240" y1="455" x2="190" y2="455" stroke="#c084fc" strokeWidth="1.5" />
+			<circle cx="190" cy="455" r="2.5" fill="#c084fc" />
+			<rect x="150" y="443" width="28" height="24" rx="2" fill="#1e293b" stroke="#c084fc" strokeWidth="1.5" />
+			<text x="164" y="437" textAnchor="middle" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">RFB1={results.rfbTop.formatted}</text>
+			<line x1="190" y1="455" x2="190" y2="467" stroke="#c084fc" strokeWidth="1.5" />
+			<line x1="190" y1="467" x2="178" y2="467" stroke="#c084fc" strokeWidth="1.5" />
+			<g transform="translate(164, 475)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<line x1="164" y1="483" x2="135" y2="483" stroke="#c084fc" strokeWidth="1.5" />
+			<line x1="135" y1="483" x2="135" y2="455" stroke="#c084fc" strokeWidth="1.5" />
+			<text x="164" y="493" textAnchor="middle" fill="#a78bfa" fontSize="8" fontFamily="JetBrains Mono">CFF={results.cffPf?.formatted}</text>
+			<line x1="150" y1="455" x2="120" y2="455" stroke="#c084fc" strokeWidth="1.5" />
+			<circle cx="120" cy="455" r="3" fill="#c084fc" />
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('VFB')}>
-              <line x1="320" y1="455" x2="240" y2="455" stroke="#c084fc" strokeWidth="1.5" />
-              <circle cx="240" cy="455" r="3.5" fill="#c084fc" />
-              <line x1="240" y1="455" x2="240" y2="467" stroke="#c084fc" strokeWidth="1.5" />
-              <rect x="228" y="467" width="24" height="26" rx="2" fill="#1e293b" stroke="#c084fc" strokeWidth="1.5" />
-              <text x="220" y="482" textAnchor="end" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">
-                RFB2={results.rfbBottom.formatted}
-              </text>
-              <line x1="240" y1="493" x2="240" y2="515" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="232" y1="515" x2="248" y2="515" stroke="#64748b" strokeWidth="2" />
-              <text x="240" y="526" textAnchor="middle" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
-              <line x1="240" y1="455" x2="190" y2="455" stroke="#c084fc" strokeWidth="1.5" />
-              <circle cx="190" cy="455" r="2.5" fill="#c084fc" />
-              <rect x="150" y="443" width="28" height="24" rx="2" fill="#1e293b" stroke="#c084fc" strokeWidth="1.5" />
-              <text x="164" y="437" textAnchor="middle" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">
-                RFB1={results.rfbTop.formatted}
-              </text>
-              <line x1="190" y1="455" x2="190" y2="467" stroke="#c084fc" strokeWidth="1.5" />
-              <line x1="190" y1="467" x2="178" y2="467" stroke="#c084fc" strokeWidth="1.5" />
-              <g transform="translate(164, 475)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <line x1="164" y1="483" x2="135" y2="483" stroke="#c084fc" strokeWidth="1.5" />
-              <line x1="135" y1="483" x2="135" y2="455" stroke="#c084fc" strokeWidth="1.5" />
-              <text x="164" y="493" textAnchor="middle" fill="#a78bfa" fontSize="8" fontFamily="JetBrains Mono">
-                CFF={results.cffPf?.formatted}
-              </text>
-              <line x1="150" y1="455" x2="120" y2="455" stroke="#c084fc" strokeWidth="1.5" />
-              <circle cx="120" cy="455" r="3" fill="#c084fc" />
-            </g>
+		  {/* FSW */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('FSW')}>
+			<line x1="320" y1="505" x2="265" y2="505" stroke="#38bdf8" strokeWidth="1.5" />
+			<rect x="238" y="494" width="27" height="22" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
+			<text x="230" y="508" textAnchor="end" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">R_fsw={results.rfswKohm.formatted}</text>
+			<line x1="238" y1="505" x2="215" y2="505" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="215" y1="497" x2="215" y2="513" stroke="#64748b" strokeWidth="2" />
+			<text x="205" y="508" textAnchor="end" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('FSW')}>
-              <line x1="320" y1="505" x2="265" y2="505" stroke="#38bdf8" strokeWidth="1.5" />
-              <rect x="238" y="494" width="27" height="22" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
-              <text x="230" y="508" textAnchor="end" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                R_fsw={results.rfswKohm.formatted}
-              </text>
-              <line x1="238" y1="505" x2="215" y2="505" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="215" y1="497" x2="215" y2="513" stroke="#64748b" strokeWidth="2" />
-              <text x="205" y="508" textAnchor="end" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
-            </g>
+		  {/* ILIMIT */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('ILIMIT')}>
+			<line x1="320" y1="545" x2="265" y2="545" stroke="#fbbf24" strokeWidth="1.5" />
+			<rect x="238" y="534" width="27" height="22" rx="2" fill="#1e293b" stroke="#fbbf24" strokeWidth="1.5" />
+			<text x="230" y="548" textAnchor="end" fill="#fbbf24" fontSize="8" fontFamily="JetBrains Mono">R_lim={results.rlimKohm.formatted}</text>
+			<line x1="238" y1="545" x2="215" y2="545" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="215" y1="537" x2="215" y2="553" stroke="#64748b" strokeWidth="2" />
+			<text x="205" y="548" textAnchor="end" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('ILIMIT')}>
-              <line x1="320" y1="545" x2="265" y2="545" stroke="#fbbf24" strokeWidth="1.5" />
-              <rect x="238" y="534" width="27" height="22" rx="2" fill="#1e293b" stroke="#fbbf24" strokeWidth="1.5" />
-              <text x="230" y="548" textAnchor="end" fill="#fbbf24" fontSize="8" fontFamily="JetBrains Mono">
-                R_lim={results.rlimKohm.formatted}
-              </text>
-              <line x1="238" y1="545" x2="215" y2="545" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="215" y1="537" x2="215" y2="553" stroke="#64748b" strokeWidth="2" />
-              <text x="205" y="548" textAnchor="end" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
-            </g>
+		  {/* MODE */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('MODE')}>
+			<line x1="320" y1="575" x2="265" y2="575" stroke="#38bdf8" strokeWidth="1.5" />
+			<rect x="238" y="564" width="27" height="22" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
+			<text x="230" y="578" textAnchor="end" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">R_mode={results.rmodeKohm.formatted}</text>
+			<line x1="238" y1="575" x2="215" y2="575" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="215" y1="567" x2="215" y2="583" stroke="#64748b" strokeWidth="2" />
+			<text x="205" y="578" textAnchor="end" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('MODE')}>
-              <line x1="320" y1="575" x2="265" y2="575" stroke="#38bdf8" strokeWidth="1.5" />
-              <rect x="238" y="564" width="27" height="22" rx="2" fill="#1e293b" stroke="#38bdf8" strokeWidth="1.5" />
-              <text x="230" y="578" textAnchor="end" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                R_mode={results.rmodeKohm.formatted}
-              </text>
-              <line x1="238" y1="575" x2="215" y2="575" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="215" y1="567" x2="215" y2="583" stroke="#64748b" strokeWidth="2" />
-              <text x="205" y="578" textAnchor="end" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">AGND</text>
-            </g>
+		  {/* BOOT цепь */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('BOOT')}>
+			<path d="M 760 105 L 830 105 L 830 150 L 760 150" fill="none" stroke="#fbbf24" strokeWidth="2" />
+			<g transform="translate(788, 105)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<text x="788" y="97" textAnchor="middle" fill="#fbbf24" fontSize="8" fontFamily="JetBrains Mono">C_boot=100nF</text>
+			<rect x="775" y="139" width="26" height="22" rx="2" fill="#1e293b" stroke="#fbbf24" strokeWidth="1.5" />
+			<text x="788" y="172" textAnchor="middle" fill="#fbbf24" fontSize="8" fontFamily="JetBrains Mono">R_boot={results.rbootOhm.formatted}</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('BOOT')}>
-              <path d="M 760 105 L 830 105 L 830 150 L 760 150" fill="none" stroke="#fbbf24" strokeWidth="2" />
-              <g transform="translate(788, 105)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <text x="788" y="97" textAnchor="middle" fill="#fbbf24" fontSize="8" fontFamily="JetBrains Mono">
-                C_boot=100nF
-              </text>
-              <rect x="775" y="139" width="26" height="22" rx="2" fill="#1e293b" stroke="#fbbf24" strokeWidth="1.5" />
-              <text x="788" y="172" textAnchor="middle" fill="#fbbf24" fontSize="8" fontFamily="JetBrains Mono">
-                R_boot={results.rbootOhm.formatted}
-              </text>
-            </g>
+		  {/* Силовая часть */}
+		  <line x1="700" y1="220" x2="780" y2="220" stroke="#38bdf8" strokeWidth="4.5" />
+		  <circle cx="760" cy="220" r="4" fill="#38bdf8" />
 
-            <line x1="700" y1="220" x2="780" y2="220" stroke="#38bdf8" strokeWidth="4.5" />
-            <circle cx="760" cy="220" r="4" fill="#38bdf8" />
+		  <g className="cursor-pointer" onClick={() => handleItemClick('L1')}>
+			<rect x="780" y="198" width="80" height="44" rx="5" fill={selectedPinOrPart === 'L1' ? '#0369a1' : '#1e293b'} stroke="#fbbf24" strokeWidth="2.5" />
+			<path d="M 790 220 A 7 7 0 0 1 806 220 A 7 7 0 0 1 822 220 A 7 7 0 0 1 838 220 A 7 7 0 0 1 854 220" fill="none" stroke="#fbbf24" strokeWidth="2.5" />
+			<text x="820" y="190" textAnchor="middle" fill="#e2e8f0" fontSize="12" fontWeight="bold">Дроссель L1</text>
+			<text x="820" y="258" textAnchor="middle" fill="#fbbf24" fontSize="11" fontWeight="bold" fontFamily="JetBrains Mono">{results.lNominal.nominal} µH (Isat ≥ {(results.iPeak * 1.3).toFixed(1)}А)</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('L1')}>
-              <rect
-                x="780"
-                y="198"
-                width="80"
-                height="44"
-                rx="5"
-                fill={selectedPinOrPart === 'L1' ? '#0369a1' : '#1e293b'}
-                stroke="#fbbf24"
-                strokeWidth="2.5"
-              />
-              <path
-                d="M 790 220 A 7 7 0 0 1 806 220 A 7 7 0 0 1 822 220 A 7 7 0 0 1 838 220 A 7 7 0 0 1 854 220"
-                fill="none"
-                stroke="#fbbf24"
-                strokeWidth="2.5"
-              />
-              <text x="820" y="190" textAnchor="middle" fill="#e2e8f0" fontSize="12" fontWeight="bold">
-                Дроссель L1
-              </text>
-              <text x="820" y="258" textAnchor="middle" fill="#fbbf24" fontSize="11" fontWeight="bold" fontFamily="JetBrains Mono">
-                {results.lNominal.nominal} µH (Isat ≥ {(results.iPeak * 1.3).toFixed(1)}А)
-              </text>
-            </g>
+		  <line x1="860" y1="220" x2="1050" y2="220" stroke="#34d399" strokeWidth="4.5" />
+		  <circle cx="940" cy="220" r="4" fill="#34d399" />
+		  <circle cx="1050" cy="220" r="5.5" fill="#34d399" />
+		  <text x="1060" y="212" fill="#34d399" fontSize="14" fontWeight="bold">VOUT ({results.voutActual} В)</text>
+		  <text x="1060" y="230" fill="#94a3b8" fontSize="11" fontFamily="JetBrains Mono">Iout = {inputs.ioutMax} А</text>
 
-            <line x1="860" y1="220" x2="1050" y2="220" stroke="#34d399" strokeWidth="4.5" />
-            <circle cx="940" cy="220" r="4" fill="#34d399" />
-            <circle cx="1050" cy="220" r="5.5" fill="#34d399" />
-            <text x="1060" y="212" fill="#34d399" fontSize="14" fontWeight="bold">
-              VOUT ({results.voutActual} В)
-            </text>
-            <text x="1060" y="230" fill="#94a3b8" fontSize="11" fontFamily="JetBrains Mono">
-              Iout = {inputs.ioutMax} А
-            </text>
+		  {/* COUT */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('COUT')}>
+			<line x1="940" y1="220" x2="940" y2="262" stroke="#34d399" strokeWidth="2" />
+			<g transform="translate(940, 284)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<line x1="940" y1="306" x2="940" y2="335" stroke="#64748b" strokeWidth="2" />
+			<line x1="930" y1="335" x2="950" y2="335" stroke="#64748b" strokeWidth="2.5" />
+			<line x1="934" y1="339" x2="946" y2="339" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="937" y1="343" x2="943" y2="343" stroke="#64748b" strokeWidth="1" />
+			<text x="955" y="288" textAnchor="start" fill="#e2e8f0" fontSize="11" fontWeight="bold">COUT</text>
+			<text x="955" y="300" textAnchor="start" fill="#34d399" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono">{results.coutQty} × {results.coutSingleUf} µF</text>
+			<text x="955" y="312" textAnchor="start" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">Пульсации ~{results.actualRippleMv} мВ</text>
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('COUT')}>
-              <line x1="940" y1="220" x2="940" y2="262" stroke="#34d399" strokeWidth="2" />
-              <g transform="translate(940, 284)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <line x1="940" y1="306" x2="940" y2="335" stroke="#64748b" strokeWidth="2" />
-              <line x1="930" y1="335" x2="950" y2="335" stroke="#64748b" strokeWidth="2.5" />
-              <line x1="934" y1="339" x2="946" y2="339" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="937" y1="343" x2="943" y2="343" stroke="#64748b" strokeWidth="1" />
-              <text x="955" y="288" textAnchor="start" fill="#e2e8f0" fontSize="11" fontWeight="bold">
-                COUT
-              </text>
-              <text x="955" y="300" textAnchor="start" fill="#34d399" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono">
-                {results.coutQty} × {results.coutSingleUf} µF
-              </text>
-              <text x="955" y="312" textAnchor="start" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">
-                Пульсации ~{results.actualRippleMv} мВ
-              </text>
-            </g>
+		  {/* VDRV */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('VDRV')}>
+			<line x1="700" y1="380" x2="775" y2="380" stroke="#c084fc" strokeWidth="2" />
+			<g transform="translate(788, 380)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<line x1="788" y1="388" x2="788" y2="415" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="780" y1="415" x2="796" y2="415" stroke="#64748b" strokeWidth="2" />
+			<text x="800" y="372" textAnchor="start" fill="#c084fc" fontSize="9" fontWeight="bold">C_VDRV</text>
+			<text x="800" y="384" textAnchor="start" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">{results.cvdrvUf.formatted}</text>
+			{results.detectedMode >= 3 && (<text x="800" y="396" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">+5V EXT</text>)}
+		  </g>
 
-            <g className="cursor-pointer" onClick={() => handleItemClick('VDRV')}>
-              <line x1="700" y1="380" x2="775" y2="380" stroke="#c084fc" strokeWidth="2" />
-              <g transform="translate(788, 380)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <line x1="788" y1="388" x2="788" y2="415" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="780" y1="415" x2="796" y2="415" stroke="#64748b" strokeWidth="2" />
-              <text x="800" y="372" textAnchor="start" fill="#c084fc" fontSize="9" fontWeight="bold">
-                C_VDRV
-              </text>
-              <text x="800" y="384" textAnchor="start" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">
-                {results.cvdrvUf.formatted}
-              </text>
-              {results.detectedMode >= 3 && (
-                <text x="800" y="396" textAnchor="start" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">
-                  +5V EXT
-                </text>
-              )}
-            </g>
-
-            <g className="cursor-pointer" onClick={() => handleItemClick('VDD')}>
-              <line x1="700" y1="470" x2="775" y2="470" stroke="#94a3b8" strokeWidth="1.5" />
-              <g transform="translate(788, 470)" className="text-slate-300">
-                <use href="#cap-symbol" />
-              </g>
-              <line x1="788" y1="478" x2="788" y2="505" stroke="#64748b" strokeWidth="1.5" />
-              <line x1="780" y1="505" x2="796" y2="505" stroke="#64748b" strokeWidth="2" />
-              <text x="800" y="462" textAnchor="start" fill="#e2e8f0" fontSize="9" fontWeight="bold">
-                C_VDD
-              </text>
-              <text x="800" y="474" textAnchor="start" fill="#94a3b8" fontSize="8" fontFamily="JetBrains Mono">
-                {results.cddUf.formatted}
-              </text>
-            </g>
-          </svg>
+		  {/* VDD */}
+		  <g className="cursor-pointer" onClick={() => handleItemClick('VDD')}>
+			<line x1="700" y1="470" x2="775" y2="470" stroke="#94a3b8" strokeWidth="1.5" />
+			<g transform="translate(788, 470)" className="text-slate-300"><use href="#cap-symbol" /></g>
+			<line x1="788" y1="478" x2="788" y2="505" stroke="#64748b" strokeWidth="1.5" />
+			<line x1="780" y1="505" x2="796" y2="505" stroke="#64748b" strokeWidth="2" />
+			<text x="800" y="462" textAnchor="start" fill="#e2e8f0" fontSize="9" fontWeight="bold">C_VDD</text>
+			<text x="800" y="474" textAnchor="start" fill="#94a3b8" fontSize="8" fontFamily="JetBrains Mono">{results.cddUf.formatted}</text>
+		  </g>
+		</svg>
         </div>
       </div>
 
@@ -977,25 +794,17 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
         <div className="mt-3 p-4 bg-slate-900 border border-cyan-800/60 rounded-lg text-xs space-y-2.5 shadow-lg">
           <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 font-mono font-bold text-xs border border-cyan-800">
-                {activeDetail.pin}
-              </span>
-              <h3 className="font-semibold text-white text-sm">
-                {activeDetail.title}
-              </h3>
+              <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 font-mono font-bold text-xs border border-cyan-800">{activeDetail.pin}</span>
+              <h3 className="font-semibold text-white text-sm">{activeDetail.title}</h3>
             </div>
-            <div className="font-mono text-cyan-300 font-bold bg-slate-950 px-2.5 py-1 rounded border border-slate-800">
-              {activeDetail.value}
-            </div>
+            <div className="font-mono text-cyan-300 font-bold bg-slate-950 px-2.5 py-1 rounded border border-slate-800">{activeDetail.value}</div>
           </div>
           {activeDetail.formula && (
             <div className="p-2 bg-slate-950/70 border border-slate-800 rounded font-mono text-[11px] text-cyan-300">
               Формула из даташита: <strong className="text-white">{activeDetail.formula}</strong>
             </div>
           )}
-          <p className="text-slate-300 text-[11px] leading-relaxed">
-            {activeDetail.detail}
-          </p>
+          <p className="text-slate-300 text-[11px] leading-relaxed">{activeDetail.detail}</p>
           {activeDetail.table && (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-[11px] font-mono border-collapse">
@@ -1008,10 +817,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
                 </thead>
                 <tbody className="divide-y divide-slate-800/60 text-slate-300">
                   {activeDetail.table.map((row, idx) => (
-                    <tr
-                      key={idx}
-                      className={results.detectedMode === idx + 1 ? 'bg-cyan-950/50 text-cyan-200 font-semibold' : ''}
-                    >
+                    <tr key={idx} className={results.detectedMode === idx + 1 ? 'bg-cyan-950/50 text-cyan-200 font-semibold' : ''}>
                       <td className="py-1 pr-3">{row.mode}</td>
                       <td className="py-1 pr-3 text-cyan-400">{row.res}</td>
                       <td className="py-1">{row.desc}</td>
