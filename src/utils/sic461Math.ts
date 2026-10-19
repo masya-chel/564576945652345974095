@@ -11,6 +11,12 @@ import {
   findCeilESeries,
 } from './eSeries';
 
+export const SIC46X_LIMITS = {
+  // ... ваши существующие константы ...
+  VRAMP_MIN_MV: 100,   // Минимум по даташиту
+  VRAMP_MAX_MV: 900,   // Максимум по даташиту
+};
+
 export const CHIP_DATA: Record<
   ChipModel,
   {
@@ -278,52 +284,59 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 1% от вывода 27 к AGND',
   };
 
-  // 8. Ripple Injection Network (VSNS Pin 20) (Datasheet Page 7)
-  // Rx = (Vin_max * Vout * (1 - D)) / Prx_max, where Prx_max = 25 mW
-  const prxMax = 0.025; // 25 mW for 0603
+  // 8. Ripple Injection Network (VSNS Pin 20) - ИСПРАВЛЕНО ПО ДАТАШИТУ
+  // Процедура: Vishay SiC46x Datasheet, Page 7-8
+  const prxMax = 0.025; // 25 мВт для резистора 0603
+  const vrampMaxV = SIC46X_LIMITS.VRAMP_MAX_MV / 1000; // 0.9 В
+  
+  // Шаг 1: Rx = (VIN_MAX * VOUT * (1-D)) / PRX_MAX
   const rxCalcOhm = (vinMax * vout * (1 - dutyMin)) / prxMax;
   const rxCalcKohm = rxCalcOhm / 1000;
+  
   const rxStd = findNearestESeries(
-    inputs.vsnsInputMode === 'manual' && inputs.rxKohm > 0
-      ? inputs.rxKohm
-      : rxCalcKohm,
+    inputs.vsnsInputMode === 'manual' && inputs.rxKohm > 0 ? inputs.rxKohm : rxCalcKohm,
     'E96'
   );
 
-  // Cx_min = Prx_max / (Vin_max * fsw * Vramp_max), Vramp_max = 900 mV
-  const vrampMax = 0.900;
-  const cxMinF = prxMax / (vinMax * fsw * vrampMax);
+  // Шаг 2: CX_MIN = PRX_MAX / (VIN_MAX * fsw * VRAMP_MAX)
+  const cxMinF = prxMax / (vinMax * fsw * vrampMaxV);
   const cxMinNf = cxMinF * 1e9;
+  
+  // Шаг 3: Рассчитываем Vramp при минимальном VIN, используя CX_MIN
+  const rxUsedOhm = rxStd.nominal * 1000;
+  const cxMinUsedF = cxMinNf * 1e-9;
+  const vrampMinCalcV = ((vinMin - vout) * vout) / (vinMin * fsw * cxMinUsedF * rxUsedOhm);
+  const vrampMinCalcMv = vrampMinCalcV * 1000;
+  
+  // Шаг 4: Выбор Cx. Если Vramp_min > 200 мВ, берем Cx_min, иначе увеличиваем Cx
+  let cxTargetNf: number;
+  if (vrampMinCalcMv > 200) {
+    cxTargetNf = cxMinNf;
+  } else {
+    cxTargetNf = cxMinNf * (vrampMinCalcMv / 200);
+  }
+  
   const cxStd = findNearestESeries(
-    inputs.vsnsInputMode === 'manual' && inputs.cxNf > 0
-      ? inputs.cxNf
-      : cxMinNf,
+    inputs.vsnsInputMode === 'manual' && inputs.cxNf > 0 ? inputs.cxNf : cxTargetNf,
     'E24'
   );
 
-  // Cy = 1 / (820 * fsw)
+  // Шаг 5: Cy = 1 / (820 * fsw) - СТРОГО ПО ДАТАШИТУ (без ограничений 1нФ)
   const cyCalcF = 1 / (820 * fsw);
   const cyCalcNf = cyCalcF * 1e9;
   const cyStd = findNearestESeries(
-    inputs.vsnsInputMode === 'manual' && inputs.cyNf > 0
-      ? inputs.cyNf
-      : cyCalcNf,
+    inputs.vsnsInputMode === 'manual' && inputs.cyNf > 0 ? inputs.cyNf : cyCalcNf,
     'E24'
   );
 
-  // Vramp = ((Vin - Vout) * Vout) / (Vin * fsw * Cx * Rx)
-  const rxUsedOhm = rxStd.nominal * 1000;
+  // Пересчет реальной пилы с выбранными стандартными номиналами
   const cxUsedF = cxStd.nominal * 1e-9;
-  const vrampNomMv = Number(
-    ((((vinNom - vout) * vout) / (vinNom * fsw * cxUsedF * rxUsedOhm)) * 1000).toFixed(0)
-  );
-  const vrampMinMv = Number(
-    ((((vinMin - vout) * vout) / (vinMin * fsw * cxUsedF * rxUsedOhm)) * 1000).toFixed(0)
-  );
+  const vrampNomMv = Number(((((vinNom - vout) * vout) / (vinNom * fsw * cxUsedF * rxUsedOhm)) * 1000).toFixed(0));
+  const vrampMinMv = Number(((((vinMin - vout) * vout) / (vinMin * fsw * cxUsedF * rxUsedOhm)) * 1000).toFixed(0));
 
-  const vrampWarning = vrampNomMv < 100 || vrampNomMv > 900;
+  const vrampWarning = vrampNomMv < SIC46X_LIMITS.VRAMP_MIN_MV || vrampNomMv > SIC46X_LIMITS.VRAMP_MAX_MV;
   if (vrampWarning) {
-    warnings.push(`Амплитуда пилы Vramp (${vrampNomMv} мВ) вне диапазона стабильности (100–900 мВ).`);
+    warnings.push(`Амплитуда пилы Vramp (${vrampNomMv} мВ) вне рекомендуемого диапазона ${SIC46X_LIMITS.VRAMP_MIN_MV}–${SIC46X_LIMITS.VRAMP_MAX_MV} мВ.`);
   }
 
   const rxComp: StandardComponent = {
@@ -337,7 +350,7 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
   };
 
   const cxComp: StandardComponent = {
-    theoretical: Number(cxMinNf.toFixed(2)),
+    theoretical: Number(cxTargetNf.toFixed(2)),
     nominal: cxStd.nominal,
     unit: 'nF',
     formatted: `${cxStd.nominal} nF`,
