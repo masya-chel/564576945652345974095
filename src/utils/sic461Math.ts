@@ -11,17 +11,11 @@ import {
   findCeilESeries,
 } from './eSeries';
 
-export const SIC46X_LIMITS = {
-  // ... ваши существующие константы ...
-  VRAMP_MIN_MV: 100,   // Минимум по даташиту
-  VRAMP_MAX_MV: 900,   // Максимум по даташиту
-};
-
 export const CHIP_DATA: Record<
   ChipModel,
   {
     maxCurrentA: number;
-    klim: number; // in thousands (K)
+    klim: number;
     rBootMinOhm: number;
     marking: string;
     description: string;
@@ -65,11 +59,13 @@ export const SIC46X_LIMITS = {
   VEN_FALLING: 1.10,
   VEN_HYST: 0.10,
   ISS_UA: 5.0,
-  GM_US: 300, // Transconductance gm = 300 µS
+  GM_US: 300,
   TON_MIN_NS: 90,
   TOFF_MIN_NS: 190,
   RDS_ON_HIGH_MOHM: 27,
   RDS_ON_LOW_MOHM: 12,
+  VRAMP_MIN_MV: 100,
+  VRAMP_MAX_MV: 900,
 };
 
 export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
@@ -95,9 +91,8 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     ren2Kohm,
   } = inputs;
 
-  const fsw = fswKhz * 1000; // in Hz
+  const fsw = fswKhz * 1000;
 
-  // 1. Silicon checks
   if (vinMin < SIC46X_LIMITS.VIN_MIN) {
     warnings.push(`Входное напряжение ${vinMin}В ниже порога SiC46x (4.5В).`);
   }
@@ -111,7 +106,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     warnings.push(`Ток нагрузки ${ioutMax}А превышает паспортный номинал ${inputs.chipModel} (${chip.maxCurrentA}А).`);
   }
 
-  // 2. Duty Cycle & Timing
   const estEfficiency = 0.92;
   const dutyNom = Math.min(0.95, vout / (vinNom * estEfficiency));
   const dutyMin = Math.min(0.95, vout / (vinMax * estEfficiency));
@@ -131,7 +125,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     warnings.push(`Время t_off (${toffNs.toFixed(1)} нс) меньше паспортного минимума 190 нс.`);
   }
 
-  // 3. Inductor Calculation (Datasheet Page 11)
   const tonSec = vout / (vinMax * fsw);
   const lCalcH = ((vinMax - vout) * tonSec) / (ioutMax * kind);
   const lCalcUh = lCalcH * 1e6;
@@ -157,7 +150,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: 'Экранированный индуктор Vishay IHLP',
   };
 
-  // 4. Output Capacitors (Cout) (Datasheet Page 12, Eq 1 & 2)
   const voutRippleV = voutRippleMaxMv / 1000;
   const coutRippleMinF = actualDeltaIL / (8 * fsw * voutRippleV);
   const coutRippleMinUf = coutRippleMinF * 1e6;
@@ -168,12 +160,12 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
   const coutTransientMinUf = coutTransientMinF * 1e6;
 
   const coutEffectiveMinUf = Math.max(coutRippleMinUf, coutTransientMinUf);
-  const coutNominalTargetUf = coutEffectiveMinUf / 0.60; // 40% DC-bias derating
+  const coutNominalTargetUf = coutEffectiveMinUf / 0.60;
   const coutStandard = findCeilESeries(coutNominalTargetUf, 'E24');
 
   let singleCoutUf = 22;
   if (coutStandard.nominal > 80) singleCoutUf = 47;
-  if (coutStandard.nominal > 200) singleCoutUf = 64; // typical Vishay eval uses 64µF / 100µF
+  if (coutStandard.nominal > 200) singleCoutUf = 64;
   const coutQty = Math.max(2, Math.ceil(coutStandard.nominal / singleCoutUf));
   const totalCoutActualUf = coutQty * singleCoutUf;
 
@@ -191,13 +183,12 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: 'Керамика MLCC X7R 1210 / 1206',
   };
 
-  // 5. Input Capacitance (Cin) (Datasheet Page 13)
   const cinRmsA = ioutMax * Math.sqrt(dutyNom * (1 - dutyNom));
   const deltaVinRippleTarget = Math.max(0.1, vinMin * 0.02);
   const cinMinF = (ioutMax * dutyNom * (1 - dutyNom)) / (fsw * deltaVinRippleTarget);
   const cinMinUf = cinMinF * 1e6;
 
-  const cinTargetUf = cinMinUf / 0.50; // High voltage derating
+  const cinTargetUf = cinMinUf / 0.50;
   const cinStandard = findCeilESeries(cinTargetUf, 'E24');
   let singleCinUf = 10;
   if (cinStandard.nominal > 40) singleCinUf = 22;
@@ -216,8 +207,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: 'Керамика MLCC X7R 1210',
   };
 
-  // 6. Switching Frequency Resistor (fSW Pin 24) (Datasheet Page 6 & 11)
-  // Rfsw = Vout / (fsw * 1.9e-10)
   const rfswCalcOhm = vout / (1.9e-10 * fsw);
   const rfswCalcKohm = rfswCalcOhm / 1000;
   const rfswStd = findNearestESeries(
@@ -238,7 +227,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 1% от вывода 24 к AGND',
   };
 
-  // 7. Operating Mode Resistor (MODE Pin 27) (Datasheet Page 5 & 9, Table 1)
   let detectedMode: OperatingMode = operatingMode || 1;
   let rmodeNom = 2.0;
 
@@ -284,44 +272,36 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 1% от вывода 27 к AGND',
   };
 
-  // 8. Ripple Injection Network (VSNS Pin 20) - ИСПРАВЛЕНО ПО ДАТАШИТУ
-  // Процедура: Vishay SiC46x Datasheet, Page 7-8
-  const prxMax = 0.025; // 25 мВт для резистора 0603
-  const vrampMaxV = SIC46X_LIMITS.VRAMP_MAX_MV / 1000; // 0.9 В
-  
-  // Шаг 1: Rx = (VIN_MAX * VOUT * (1-D)) / PRX_MAX
+  const prxMax = 0.025;
+  const vrampMaxV = SIC46X_LIMITS.VRAMP_MAX_MV / 1000;
+
   const rxCalcOhm = (vinMax * vout * (1 - dutyMin)) / prxMax;
   const rxCalcKohm = rxCalcOhm / 1000;
-  
   const rxStd = findNearestESeries(
     inputs.vsnsInputMode === 'manual' && inputs.rxKohm > 0 ? inputs.rxKohm : rxCalcKohm,
     'E96'
   );
 
-  // Шаг 2: CX_MIN = PRX_MAX / (VIN_MAX * fsw * VRAMP_MAX)
   const cxMinF = prxMax / (vinMax * fsw * vrampMaxV);
   const cxMinNf = cxMinF * 1e9;
-  
-  // Шаг 3: Рассчитываем Vramp при минимальном VIN, используя CX_MIN
+
   const rxUsedOhm = rxStd.nominal * 1000;
   const cxMinUsedF = cxMinNf * 1e-9;
   const vrampMinCalcV = ((vinMin - vout) * vout) / (vinMin * fsw * cxMinUsedF * rxUsedOhm);
   const vrampMinCalcMv = vrampMinCalcV * 1000;
-  
-  // Шаг 4: Выбор Cx. Если Vramp_min > 200 мВ, берем Cx_min, иначе увеличиваем Cx
+
   let cxTargetNf: number;
   if (vrampMinCalcMv > 200) {
     cxTargetNf = cxMinNf;
   } else {
     cxTargetNf = cxMinNf * (vrampMinCalcMv / 200);
   }
-  
+
   const cxStd = findNearestESeries(
     inputs.vsnsInputMode === 'manual' && inputs.cxNf > 0 ? inputs.cxNf : cxTargetNf,
     'E24'
   );
 
-  // Шаг 5: Cy = 1 / (820 * fsw) - СТРОГО ПО ДАТАШИТУ (без ограничений 1нФ)
   const cyCalcF = 1 / (820 * fsw);
   const cyCalcNf = cyCalcF * 1e9;
   const cyStd = findNearestESeries(
@@ -329,7 +309,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     'E24'
   );
 
-  // Пересчет реальной пилы с выбранными стандартными номиналами
   const cxUsedF = cxStd.nominal * 1e-9;
   const vrampNomMv = Number(((((vinNom - vout) * vout) / (vinNom * fsw * cxUsedF * rxUsedOhm)) * 1000).toFixed(0));
   const vrampMinMv = Number(((((vinMin - vout) * vout) / (vinMin * fsw * cxUsedF * rxUsedOhm)) * 1000).toFixed(0));
@@ -371,11 +350,10 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 X7R (VSNS к VOUT)',
   };
 
-  // 9. Error Amplifier Loop Compensation (COMP Pin 21) (Datasheet Page 8)
   const lcPoleFreqKhz = Number((1 / (2 * Math.PI * Math.sqrt(lNominalH * (totalCoutActualUf * 1e-6))) / 1000).toFixed(1));
   const crossoverFreqKhz = Number((fswKhz / 10).toFixed(1));
   const rfbRatio = SIC46X_LIMITS.VREF / vout;
-  const gm = SIC46X_LIMITS.GM_US * 1e-6; // 300 µS
+  const gm = SIC46X_LIMITS.GM_US * 1e-6;
   const ghEst = 1.8;
   const rcompCalcOhm = 1 / (ghEst * gm * rfbRatio);
   const rcompCalcKohm = rcompCalcOhm / 1000;
@@ -386,7 +364,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     'E96'
   );
 
-  // Ccomp = 5 * sqrt(L * Co) / Rcomp
   const ccompCalcF = (5 * Math.sqrt(lNominalH * (totalCoutActualUf * 1e-6))) / (rcompStd.nominal * 1000);
   const ccompCalcPf = ccompCalcF * 1e12;
   const ccompStd = findNearestESeries(
@@ -416,8 +393,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 C0G/NP0 (после Rcomp к AGND)',
   };
 
-  // 10. Current Limit Resistor (ILIMIT Pin 25) (Datasheet Page 12, Eq for Rlim)
-  // Rlim (kΩ) = Klim / Ivalley
   const rlimCalcKohm = chip.klim / iValley;
   const rlimStd = findNearestESeries(rlimCalcKohm, 'E96');
   const ilimNominalA = Number((chip.klim / rlimStd.nominal).toFixed(1));
@@ -432,7 +407,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 1% (ILIMIT вывод 25 к AGND)',
   };
 
-  // 11. Soft-Start Capacitor (SS Pin 19)
   const cssCalcF = (SIC46X_LIMITS.ISS_UA * 1e-6 * (tssMs * 1e-3)) / SIC46X_LIMITS.VREF;
   const cssCalcNf = cssCalcF * 1e9;
   const cssStd = findNearestESeries(
@@ -454,7 +428,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 X7R (SS вывод 19 к AGND)',
   };
 
-  // 12. Feedback Divider (VFB Pin 22)
   const rfbBottomValK = rfb2Kohm || 10.0;
   const rfbTopCalcK = rfbBottomValK * (vout / SIC46X_LIMITS.VREF - 1);
   const rfbTopStd = findNearestESeries(
@@ -487,7 +460,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
   const voutActual = Number((SIC46X_LIMITS.VREF * (1 + rfbTopStd.nominal / rfbBottomComp.nominal)).toFixed(3));
   const voutErrorPercent = Number((((voutActual - vout) / vout) * 100).toFixed(2));
 
-  // Feedforward capacitor Cff across RFB1
   const cffCalcPf = (1 / (2 * Math.PI * (rfbTopStd.nominal * 1000) * (crossoverFreqKhz * 1000))) * 1e12;
   const cffStd = findNearestESeries(Math.max(10, cffCalcPf), 'E24');
   const cffComp: StandardComponent = {
@@ -501,7 +473,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 C0G (параллельно RFB1)',
   };
 
-  // 13. UVLO EN Divider (EN Pin 3)
   const renBottomK = inputs.ren2Kohm > 0 ? inputs.ren2Kohm : 10.0;
   const renTopCalcK = renBottomK * (vinStartUvlo / SIC46X_LIMITS.VEN_RISING - 1);
   const renTopStd = findNearestESeries(
@@ -543,7 +514,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 1% (EN вывод 3 к AGND)',
   };
 
-  // 14. Bootstrap & Phase Network (BOOT Pin 4 & PHASE1, PHASE2 Pins 5, 6)
   const rbootVal = inputs.bootInputMode === 'custom' && inputs.rbootOhm > 0
     ? inputs.rbootOhm
     : chip.rBootMinOhm;
@@ -572,7 +542,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: '0603 между CBOOT и PHASE1/2 (выводы 5, 6)',
   };
 
-  // 15. Gate Drive & Bias Components (VDRV Pin 16 & VDD Pin 26 & VCIN Pin 1)
   const cvdrvComp: StandardComponent = {
     theoretical: 4.7,
     nominal: inputs.cvdrvUf || 4.7,
@@ -589,7 +558,6 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     ? 'Внешний источник 5.0В (внутренний LDO отключен для макс. КПД)'
     : 'Внутренний регулятор LDO 5.0В';
 
-  // Estimate gate charge current: Qg ~ 40 nC
   const igateA = 40e-9 * fsw;
   const vdrvPowerLossW = isExternalVdrv
     ? 0
@@ -647,12 +615,11 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     packageRecommendation: ultrasonicEnabled ? '0603 перемычка к VDD' : 'Не устанавливать (Float)',
   };
 
-  // 16. Total Efficiency & Loss Estimation
   const rHighOhm = SIC46X_LIMITS.RDS_ON_HIGH_MOHM * 1e-3;
   const rLowOhm = SIC46X_LIMITS.RDS_ON_LOW_MOHM * 1e-3;
   const conductionLossW = Math.pow(iRms, 2) * (dutyNom * rHighOhm + (1 - dutyNom) * rLowOhm);
   const switchingLossW = 0.5 * vinNom * ioutMax * 20e-9 * fsw;
-  const inductorDcrOhm = 0.005; // 5 mOhm typical Vishay IHLP
+  const inductorDcrOhm = 0.005;
   const inductorDcrLossW = Math.pow(iRms, 2) * inductorDcrOhm;
   const quiescentLossW = 0.15;
   const totalLossW = conductionLossW + switchingLossW + inductorDcrLossW + quiescentLossW + vdrvPowerLossW;
