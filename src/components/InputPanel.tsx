@@ -992,6 +992,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
               unit="кОм"
               value={inputs.ren2Kohm}
               colorScheme={inputs.uvloInputMode === 'resistors' ? 'cyan' : 'default'}
+			  disabled={inputs.uvloInputMode === 'voltage'}
               hint={
                 inputs.uvloInputMode === 'resistors'
                   ? `Задано вручную: ${inputs.ren2Kohm} кОм`
