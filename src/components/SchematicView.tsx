@@ -279,15 +279,15 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
           layoutNote: 'Конденсатор монтируется между выводом 19 и AGND.',
         };
       case 'EN':
-      case 'PIN_3':
-        return {
-          pin: 'Пин 3: EN',
-          title: 'Разрешение работы и настраиваемая защита UVLO',
-          value: `REN1 = ${results.renTopKohm.formatted}, REN2 = ${results.renBottomKohm.formatted}`,
-          formula: 'Vin_start = 1.20В · (1 + REN1/REN2), Vin_stop = 1.10В · (1 + REN1/REN2)',
-          detail: `Порог включения: Vin_start = ${results.actualVinStart} В. Порог отключения: Vin_stop = ${results.actualVinStop} В. Встроенный гистерезис компаратора EN равен ровно 100 мВ, что гарантирует уверенный пуск без дребезга.`,
-          layoutNote: 'Резистор REN1 подключается к шине VIN, REN2 — к AGND.',
-        };
+	  case 'PIN_3':
+	    return {
+		  pin: 'Пин 3: EN',
+	  	  title: 'Разрешение работы и настраиваемая защита UVLO',
+		  value: `REN1 = ${results.renTopKohm.formatted}, REN2 = ${results.renBottomKohm.formatted}`,
+		  formula: 'Vin_start = 1.35В · (1 + REN1/REN2), Vin_stop = 1.20В · (1 + REN1/REN2)',
+		  detail: `Порог включения: Vin_start = ${results.actualVinStart} В. Порог отключения: Vin_stop = ${results.actualVinStop} В. Встроенный гистерезис компаратора EN равен 150 мВ (стр. 5 даташита). Для гарантированного включения требуется сигнал > 1.4В.`,
+		  layoutNote: 'Резистор REN1 подключается к шине VIN, REN2 — к AGND. Внутренний pull-down 5-9 МОм предотвращает ложное включение.',
+	    };
       case 'ILIMIT':
       case 'PIN_25':
         return {
