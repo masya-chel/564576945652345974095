@@ -342,7 +342,7 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
       vrampMaxMv = calcVrampMv(vinMax, cxUsedF);
     }
 
-    cxStd = { nominal: cxUsedF * 1e9, errorPercent: 0, series: 'E24' };
+    cxStd = { nominal: cxUsedF * 1e9, errorPercent: 0 };
   }
 
   vrampMinMv = Number(vrampMinMv.toFixed(0));
