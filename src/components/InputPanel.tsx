@@ -1051,7 +1051,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           <span className="text-amber-400 font-bold">{results.rlimKohm.formatted}</span>
         </div>
         <p className="text-[10px] text-slate-400 font-sans leading-tight">
-          Формула Vishay: Rlim = Klim / Ivalley ({results.klimValue}k / {results.iValley}A). Порог нижнего ключа Ivalley ≈ {results.ilimNominalA} A.
+          Формула Vishay: Rlim = Klim / Ivalley ({results.klimValue}k / {results.iValley}A). Порог нижнего ключа Ivalley ≈ {results.ilimNominalA} A (средний ток отсечки Iocp ≈ {(results.ilimNominalA + results.actualDeltaIL / 2).toFixed(1)} A).
         </p>
       </div>
 
