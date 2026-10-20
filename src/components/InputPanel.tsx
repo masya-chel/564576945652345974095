@@ -739,7 +739,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
             Инжекция пилы VSNS (Пин 20)
           </label>
           <span className={`text-[10px] font-mono font-bold ${results.vrampWarning ? 'text-amber-400' : 'text-cyan-400'}`}>
-            Vramp = {results.vrampMv} мВ
+            Vramp = {results.vrampMinMv}..{results.vrampMaxMv} мВ
           </span>
         </div>
 
@@ -900,7 +900,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
             Защита по входу (UVLO / EN Пин 3)
           </label>
           <span className="text-[10px] font-mono text-cyan-400">
-            Ven_rise = 1.20В · Ven_fall = 1.10В
+            Ven_rise = 1.35В · Ven_fall = 1.20В
           </span>
         </div>
 
@@ -951,7 +951,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           onChange={(val) => {
             onChange('vinStartUvlo', val);
             const ren2 = inputs.ren2Kohm > 0 ? inputs.ren2Kohm : 10.0;
-            const syncedRen1 = Number((ren2 * (val / 1.20 - 1)).toFixed(2));
+            const syncedRen1 = Number((ren2 * (val / 1.35 - 1)).toFixed(2));
             onChange('ren1Kohm', syncedRen1);
           }}
         />
@@ -988,7 +988,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
               onChange={(newRen1) => {
                 onChange('ren1Kohm', newRen1);
                 const ren2 = inputs.ren2Kohm > 0 ? inputs.ren2Kohm : 10.0;
-                const newVinStart = Number((1.20 * (1 + newRen1 / ren2)).toFixed(2));
+                const newVinStart = Number((1.35 * (1 + newRen1 / ren2)).toFixed(2));
                 onChange('vinStartUvlo', newVinStart);
               }}
             />
@@ -1008,10 +1008,10 @@ export const InputPanel: React.FC<InputPanelProps> = ({
                 onChange('ren2Kohm', newRen2);
                 if (newRen2 > 0) {
                   if (inputs.uvloInputMode === 'resistors') {
-                    const newVinStart = Number((1.20 * (1 + inputs.ren1Kohm / newRen2)).toFixed(2));
+                    const newVinStart = Number((1.35 * (1 + inputs.ren1Kohm / newRen2)).toFixed(2));
                     onChange('vinStartUvlo', newVinStart);
                   } else {
-                    const syncedRen1 = Number((newRen2 * (inputs.vinStartUvlo / 1.20 - 1)).toFixed(2));
+                    const syncedRen1 = Number((newRen2 * (inputs.vinStartUvlo / 1.35 - 1)).toFixed(2));
                     onChange('ren1Kohm', syncedRen1);
                   }
                 }
@@ -1022,9 +1022,13 @@ export const InputPanel: React.FC<InputPanelProps> = ({
 
         <div className="p-2.5 bg-slate-950/70 border border-slate-800 rounded-lg text-xs space-y-1.5 font-mono">
           <div className="flex items-center justify-between text-slate-400">
-            <span>Порог отключения Vin_stop (Ven=1.10В):</span>
-            <span className="text-slate-200 font-bold">{results.actualVinStop} В</span>
-          </div>
+			  <span>Порог включения Vin_start (Ven=1.35В):</span>
+			  <span className="text-slate-200 font-bold">{results.actualVinStart} В</span>
+		  </div>
+		  <div className="flex items-center justify-between text-slate-400">
+			  <span>Порог отключения Vin_stop (Ven=1.20В):</span>
+			  <span className="text-slate-200 font-bold">{results.actualVinStop} В</span>
+		  </div>
           <div className="flex items-center justify-between text-slate-400">
             <span>Физический гистерезис:</span>
             <span className="text-emerald-400 font-bold">
