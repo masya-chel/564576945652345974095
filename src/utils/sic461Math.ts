@@ -371,8 +371,8 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     formatted: `${cxStd.nominal} nF`,
     series: 'E24',
     errorPercent: cxStd.errorPercent,
-    voltageRating: '≥ 50V',
-    packageRecommendation: '0603 C0G/X7R (узел пилы к VSNS)',
+    voltageRating: '≥ 25V',
+    packageRecommendation: '0603 X7R (узел пилы к VOUT)',
   };
 
   const cyComp: StandardComponent = {
@@ -382,8 +382,8 @@ export function calculateSiC461(inputs: CalculatorInputs): CalculatorResults {
     formatted: `${cyStd.nominal} nF`,
     series: 'E24',
     errorPercent: cyStd.errorPercent,
-    voltageRating: '≥ 25V',
-    packageRecommendation: '0603 X7R (VSNS к VOUT)',
+    voltageRating: '≥ 50V',
+    packageRecommendation: '0603 C0G/X7R (к выводу 20 VSNS)',
   };
 
   const lcPoleFreqKhz = Number((1 / (2 * Math.PI * Math.sqrt(lNominalH * (totalCoutActualUf * 1e-6))) / 1000).toFixed(1));
@@ -725,9 +725,9 @@ export function generateBomList(inputs: CalculatorInputs, results: CalculatorRes
     { id: 'R_FB2', designator: 'R_FB2 (R_FB_L)', pinNumber: 'Пин 22 (VFB)', description: 'Нижний резистор делителя цепи обратной связи к AGND', category: 'Resistor', nominalValue: `${results.rfbBottom.nominal} kΩ`, calculatedValue: `${results.rfbBottom.theoretical} kΩ`, tolerance: '±1% (E96)', minRating: '1/16 W', recommendedFootprint: 'SMD 0603', notes: 'Подключается к аналоговой земле AGND (вывод 17/23).' },
     { id: 'R_COMP', designator: 'R_COMP', pinNumber: 'Пин 21 (COMP)', description: 'Резистор частотной коррекции петли транскондуктивного ОУ', category: 'Resistor', nominalValue: `${results.rcompKohm.nominal} kΩ`, calculatedValue: `${results.rcompKohm.theoretical} kΩ`, tolerance: '±1%', minRating: '1/16 W', recommendedFootprint: 'SMD 0603', notes: `Задает полосу среза контура fc ≈ ${results.crossoverFreqKhz} кГц (gm = 300 µS).` },
     { id: 'C_COMP', designator: 'C_COMP', pinNumber: 'Пин 21 (COMP)', description: 'Конденсатор интегратора петли компенсации', category: 'Capacitor', nominalValue: `${results.ccompPf.nominal} pF`, calculatedValue: `${results.ccompPf.theoretical} pF`, tolerance: '±5%', minRating: '≥ 25V C0G / NP0', recommendedFootprint: 'SMD 0603', notes: 'Последовательно с R_COMP на AGND. Компенсирует полюс выходного LC фильтра.' },
-    { id: 'R_X', designator: 'R_X', pinNumber: 'Пин 20 (VSNS)', description: 'Резистор цепи инжекции пилообразного напряжения', category: 'Resistor', nominalValue: `${results.rxKohm.nominal} kΩ`, calculatedValue: `${results.rxKohm.theoretical} kΩ`, tolerance: '±1%', minRating: '1/10 W (0603), Pdiss ≤ 25 мВт', recommendedFootprint: 'SMD 0603', notes: `Формирует наклон пилы для устойчивости COT. Vramp = ${results.vrampMinMv}..${results.vrampMaxMv} мВ (норма: 100–900 мВ).` },
-    { id: 'C_X', designator: 'C_X', pinNumber: 'Пин 20 (VSNS)', description: 'Конденсатор цепи инжекции пилообразного напряжения', category: 'Capacitor', nominalValue: `${results.cxNf.nominal} nF`, calculatedValue: `${results.cxNf.theoretical} nF`, tolerance: '±10%', minRating: '≥ 50V C0G / X7R', recommendedFootprint: 'SMD 0603', notes: 'Устраняет постоянную составляющую пилы между узлом SW и VSNS.' },
-    { id: 'C_Y', designator: 'C_Y', pinNumber: 'Пин 20 (VSNS)', description: 'Конденсатор фильтрации цепи инжекции пилы', category: 'Capacitor', nominalValue: `${results.cyNf.nominal} nF`, calculatedValue: `${results.cyNf.theoretical} nF`, tolerance: '±10%', minRating: '≥ 25V X7R', recommendedFootprint: 'SMD 0603', notes: 'Включается между выводом VSNS (20) и VOUT.' },
+    { id: 'R_X', designator: 'R_X', pinNumber: 'Цепь SW / пилы', description: 'Резистор цепи инжекции пилообразного напряжения', category: 'Resistor', nominalValue: `${results.rxKohm.nominal} kΩ`, calculatedValue: `${results.rxKohm.theoretical} kΩ`, tolerance: '±1%', minRating: '1/10 W (0603), Pdiss ≤ 25 мВт', recommendedFootprint: 'SMD 0603', notes: `Формирует наклон пилы для устойчивости COT. Vramp = ${results.vrampMinMv}..${results.vrampMaxMv} мВ (норма: 100–900 мВ).` },
+    { id: 'C_X', designator: 'C_X', pinNumber: 'Цепь VOUT', description: 'Интегрирующий конденсатор цепи инжекции пилы', category: 'Capacitor', nominalValue: `${results.cxNf.nominal} nF`, calculatedValue: `${results.cxNf.theoretical} nF`, tolerance: '±10%', minRating: '≥ 25V X7R', recommendedFootprint: 'SMD 0603', notes: 'Подключается между узлом пилы и шиной VOUT.' },
+    { id: 'C_Y', designator: 'C_Y', pinNumber: 'Пин 20 (VSNS)', description: 'Конденсатор связи цепи инжекции пилообразного напряжения', category: 'Capacitor', nominalValue: `${results.cyNf.nominal} nF`, calculatedValue: `${results.cyNf.theoretical} nF`, tolerance: '±10%', minRating: '≥ 50V C0G / X7R', recommendedFootprint: 'SMD 0603', notes: 'Подключается непосредственно к выводу 20 (VSNS) микросхемы для развязки по постоянному току.' },
     { id: 'C_SS', designator: 'C_SS', pinNumber: 'Пин 19 (SS)', description: 'Конденсатор программирования времени софт-старта', category: 'Capacitor', nominalValue: `${results.cssNf.nominal} nF`, calculatedValue: `${results.cssNf.theoretical} nF`, tolerance: '±10%', minRating: '≥ 16V X7R', recommendedFootprint: 'SMD 0603', notes: `Ток заряда 5 мкА. Время плавного старта Tss = ${results.actualTssMs} мс.` },
     { id: 'R_LIM', designator: 'R_LIM', pinNumber: 'Пин 25 (ILIMIT)', description: 'Резистор программирования токового предела', category: 'Resistor', nominalValue: `${results.rlimKohm.nominal} kΩ`, calculatedValue: `${results.rlimKohm.theoretical} kΩ`, tolerance: '±1%', minRating: '1/16 W', recommendedFootprint: 'SMD 0603', notes: `Устанавливает порог защиты нижнего ключа Ivalley ≈ ${results.ilimNominalA} А (Klim = ${results.klimValue}k).` },
     { id: 'R_EN1', designator: 'R_EN1 (R_EN_H)', pinNumber: 'Пин 3 (EN)', description: 'Верхний резистор делителя UVLO от шины VIN', category: 'Resistor', nominalValue: `${results.renTopKohm.nominal} kΩ`, calculatedValue: `${results.renTopKohm.theoretical} kΩ`, tolerance: '±1%', minRating: `≥ ${Math.ceil(inputs.vinMax)} V (0805)`, recommendedFootprint: 'SMD 0805', notes: `Порог включения Vin_start = ${results.actualVinStart} В.` },

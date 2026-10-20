@@ -769,14 +769,14 @@ export const InputPanel: React.FC<InputPanelProps> = ({
                 onChange={() => onChange('vsnsInputMode', 'manual')}
                 className="accent-cyan-500 cursor-pointer"
               />
-              <span>Свои номиналы Rx, Cx, Cy</span>
+              <span>Свои номиналы Rx, Cy, Cx</span>
             </label>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
           <ManualNumericInput
-            label="Rx"
+            label="Rx (от SW)"
             unit="кОм"
             value={inputs.rxKohm}
             disabled={inputs.vsnsInputMode === 'auto'}
@@ -786,17 +786,7 @@ export const InputPanel: React.FC<InputPanelProps> = ({
           />
 
           <ManualNumericInput
-            label="Cx"
-            unit="нФ"
-            value={inputs.cxNf}
-            disabled={inputs.vsnsInputMode === 'auto'}
-            colorScheme={inputs.vsnsInputMode === 'manual' ? 'cyan' : 'default'}
-            hint={`E24: ${results.cxNf.nominal}n`}
-            onChange={(val) => onChange('cxNf', val)}
-          />
-
-          <ManualNumericInput
-            label="Cy"
+            label="Cy (к VSNS)"
             unit="нФ"
             value={inputs.cyNf}
             disabled={inputs.vsnsInputMode === 'auto'}
@@ -804,7 +794,21 @@ export const InputPanel: React.FC<InputPanelProps> = ({
             hint={`E24: ${results.cyNf.nominal}n`}
             onChange={(val) => onChange('cyNf', val)}
           />
+
+          <ManualNumericInput
+            label="Cx (к VOUT)"
+            unit="нФ"
+            value={inputs.cxNf}
+            disabled={inputs.vsnsInputMode === 'auto'}
+            colorScheme={inputs.vsnsInputMode === 'manual' ? 'cyan' : 'default'}
+            hint={`E24: ${results.cxNf.nominal}n`}
+            onChange={(val) => onChange('cxNf', val)}
+          />
         </div>
+
+        <p className="text-[10px] text-slate-400 font-sans leading-tight">
+          Конденсатор <b>Cy</b> подключается к выводу 20 (VSNS), отсекая постоянную составляющую. Цепь <b>Rx</b> и <b>Cx</b> формирует пилу параллельно дросселю (от SW к VOUT).
+        </p>
       </div>
 
       {/* 9. Софт-старт (SS Pin 19) */}

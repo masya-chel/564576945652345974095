@@ -243,10 +243,10 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
         return {
           pin: 'Пин 20: VSNS',
           title: 'Инжекция пилы для устойчивости COT (Constant On-Time)',
-          value: `Rx = ${results.rxKohm.formatted}, Cx = ${results.cxNf.formatted}, Cy = ${results.cyNf.formatted} → Vramp = ${results.vrampMinMv}..${results.vrampMaxMv} мВ`,
+          value: `Rx = ${results.rxKohm.formatted}, Cy = ${results.cyNf.formatted}, Cx = ${results.cxNf.formatted} → Vramp = ${results.vrampMinMv}..${results.vrampMaxMv} мВ`,
           formula: 'Vramp = ((Vin - Vout) · Vout) / (Vin · fsw · Cx · Rx)',
-          detail: `Поскольку современные керамические конденсаторы MLCC имеют сверхнизкий ESR, естественной пилы на выходе недостаточно для работы компаратора COT. Цепь Rx (от узла SW), Cx и Cy инжектирует внутреннюю синтезированную пилу в узел VSNS. Рекомендуемый диапазон амплитуды: 100..900 мВ. Текущий диапазон: ${results.vrampMinMv}..${results.vrampMaxMv} мВ (при Vin = ${inputs.vinMin}..${inputs.vinMax} В).`,
-          layoutNote: 'Резистор Rx рассеивает до 25 мВт (типоразмер 0603). Сигнал VSNS снимается кельвиновским подключением.',
+          detail: `Поскольку современные керамические конденсаторы MLCC имеют сверхнизкий ESR, естественной пилы на выходе недостаточно для работы компаратора COT. Цепь Rx (от узла SW) и Cx (к шине VOUT) синтезирует пилу напряжения. Конденсатор Cy подключается непосредственно к выводу 20 (VSNS), передавая пилу и отсекая постоянную составляющую. Рекомендуемый диапазон амплитуды: 100..900 мВ. Текущий диапазон: ${results.vrampMinMv}..${results.vrampMaxMv} мВ (при Vin = ${inputs.vinMin}..${inputs.vinMax} В).`,
+          layoutNote: 'Конденсатор Cy подключается непосредственно к выводу 20 (VSNS) микросхемы. Резистор Rx рассеивает до 25 мВт (типоразмер 0603). Сигнал VSNS снимается кельвиновским подключением.',
         };
       case 'L1':
       case 'SW':
@@ -538,11 +538,11 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
 			<text x="455" y="34" textAnchor="middle" fill="#38bdf8" fontSize="9" fontFamily="JetBrains Mono">SW импульсный узел → Rx (VSNS COT)</text>
 		  </g>
 
-		  {/* 2. Трасса обратной связи VOUT в делитель VFB и Cy (по нижнему коридору y=755) */}
+		  {/* 2. Трасса обратной связи VOUT в делитель VFB и Cx (по нижнему коридору y=755) */}
 		  <g className="cursor-pointer" onClick={() => handleItemClick('VFB')}>
 			<path d="M 1170 270 L 1170 755 L 135 755 L 135 520" fill="none" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.85" />
 			<rect x="500" y="745" width="280" height="20" rx="4" fill="#0b1120" stroke="#c084fc" strokeWidth="1" />
-			<text x="640" y="759" textAnchor="middle" fill="#c084fc" fontSize="9" fontFamily="JetBrains Mono">Обратная связь VOUT → RFB1 (0.8В) / Cy</text>
+			<text x="640" y="759" textAnchor="middle" fill="#c084fc" fontSize="9" fontFamily="JetBrains Mono">Обратная связь VOUT → RFB1 (0.8В) / Cx</text>
 		  </g>
 
 		  {/* КОРПУС МИКРОСХЕМЫ (SiC461 MLP55-27L) */}
@@ -730,16 +730,16 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
 			<line x1="110" y1="400" x2="135" y2="400" stroke="#38bdf8" strokeWidth="1.5" />
 			<circle cx="135" cy="400" r="3" fill="#38bdf8" />
 
-			{/* Конденсатор Cy к обратной связи VOUT */}
+			{/* Конденсатор Cx к обратной связи VOUT */}
 			<line x1="135" y1="400" x2="135" y2="415" stroke="#38bdf8" strokeWidth="1.5" />
 			<g transform="translate(135, 427)" className="text-slate-300"><use href="#cap-v" /></g>
-			<text x="125" y="430" textAnchor="end" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">Cy={results.cyNf.formatted}</text>
+			<text x="125" y="430" textAnchor="end" fill="#c084fc" fontSize="8" fontFamily="JetBrains Mono">Cx={results.cxNf.formatted}</text>
 			<line x1="135" y1="439" x2="135" y2="520" stroke="#c084fc" strokeWidth="1.5" strokeDasharray="3 2" />
 
-			{/* Конденсатор Cx к выводу 20 VSNS */}
+			{/* Конденсатор Cy к выводу 20 VSNS */}
 			<line x1="135" y1="400" x2="165" y2="400" stroke="#38bdf8" strokeWidth="1.5" />
 			<g transform="translate(177, 400)" className="text-slate-300"><use href="#cap-h" /></g>
-			<text x="177" y="386" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">Cx={results.cxNf.formatted}</text>
+			<text x="177" y="386" textAnchor="middle" fill="#38bdf8" fontSize="8" fontFamily="JetBrains Mono">Cy={results.cyNf.formatted}</text>
 			<line x1="189" y1="400" x2="430" y2="400" stroke="#38bdf8" strokeWidth="1.5" />
 			<text x="240" y="416" textAnchor="start" fill="#64748b" fontSize="8" fontFamily="JetBrains Mono">
 			  Vramp = {results.vrampMinMv}..{results.vrampMaxMv} мВ (COT)
