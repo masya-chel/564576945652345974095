@@ -406,22 +406,6 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 text-xs">
-        <span className="text-slate-400 text-[11px] font-mono shrink-0 mr-1">Пины SiC46x:</span>
-        {pinsList.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => setSelectedPinOrPart(p.key)}
-            className={`px-2.5 py-1 rounded text-[11px] font-mono shrink-0 transition-colors border ${
-              selectedPinOrPart === p.key
-                ? 'bg-cyan-950/80 border-cyan-500 text-cyan-300 font-bold shadow-sm'
-                : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-            }`}
-          >
-            {p.label}
-          </button>
-        ))}
-      </div>
 
       <div
         ref={containerRef}
@@ -485,7 +469,7 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
           }}
           className="w-full h-full flex items-center justify-center pointer-events-auto"
         >
-        <svg viewBox="0 0 1320 800" className="w-full max-w-[1320px] h-auto select-none font-sans">
+        <svg viewBox="0 0 1440 800" className="w-full max-w-[1440px] h-auto select-none font-sans">
 		  <defs>
 			<linearGradient id="icGrad" x1="0" y1="0" x2="0" y2="1">
 			  <stop offset="0%" stopColor="#1e293b" />
@@ -876,9 +860,10 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
 		  {/* Терминал VOUT */}
 		  <circle cx="1220" cy="270" r="8" fill="#0f172a" stroke="#34d399" strokeWidth="2" />
 		  <circle cx="1220" cy="270" r="4.5" fill="#34d399" />
-		  <text x="1238" y="262" fill="#34d399" fontSize="14" fontWeight="bold">VOUT ({results.voutActual} В)</text>
-		  <text x="1238" y="278" fill="#f1f5f9" fontSize="11" fontFamily="JetBrains Mono">Iout = {inputs.ioutMax} А</text>
-		  <text x="1238" y="292" fill="#94a3b8" fontSize="9" fontFamily="JetBrains Mono">Pout = {(results.voutActual * inputs.ioutMax).toFixed(1)} Вт</text>
+		  <rect x="1235" y="246" width="180" height="56" rx="5" fill="#0b1120" stroke="#10b981" strokeWidth="1" opacity="0.95" />
+		  <text x="1245" y="263" fill="#34d399" fontSize="13" fontWeight="bold">VOUT ({results.voutActual} В)</text>
+		  <text x="1245" y="279" fill="#f1f5f9" fontSize="11" fontFamily="JetBrains Mono">Iout = {inputs.ioutMax} А</text>
+		  <text x="1245" y="293" fill="#94a3b8" fontSize="9.5" fontFamily="JetBrains Mono">Pout = {(results.voutActual * inputs.ioutMax).toFixed(1)} Вт</text>
 
 		  {/* Выходная батарея конденсаторов COUT */}
 		  <g className="cursor-pointer" onClick={() => handleItemClick('COUT')}>
@@ -923,53 +908,97 @@ export const SchematicView: React.FC<SchematicViewProps> = ({
         </div>
       </div>
 
-      {activeDetail && (
-        <div className="mt-3 p-4 bg-slate-900 border border-cyan-800/60 rounded-lg text-xs space-y-2.5 shadow-lg">
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-800">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 font-mono font-bold text-xs border border-cyan-800">{activeDetail.pin}</span>
-              <h3 className="font-semibold text-white text-sm">{activeDetail.title}</h3>
-            </div>
-            <div className="font-mono text-cyan-300 font-bold bg-slate-950 px-2.5 py-1 rounded border border-slate-800">{activeDetail.value}</div>
+      {/* Интерактивная панель подсказок и описания выводов под графической схемой */}
+      <div className="mt-4 bg-slate-900 border border-slate-800 rounded-lg p-4 shadow-lg space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-800 text-xs">
+          <div className="flex items-center gap-2">
+            <Cpu className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span className="font-semibold text-slate-200">Интерактивные подсказки к выводам SiC461 (кликните по выводу для подробностей):</span>
           </div>
-          {activeDetail.formula && (
-            <div className="p-2 bg-slate-950/70 border border-slate-800 rounded font-mono text-[11px] text-cyan-300">
-              Формула из даташита: <strong className="text-white">{activeDetail.formula}</strong>
-            </div>
-          )}
-          <p className="text-slate-300 text-[11px] leading-relaxed">{activeDetail.detail}</p>
-          {activeDetail.table && (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-[11px] font-mono border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-800 text-slate-400">
-                    <th className="py-1 pr-3">Режим</th>
-                    <th className="py-1 pr-3">Резистор R_MODE</th>
-                    <th className="py-1">Поведение микросхемы</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300">
-                  {activeDetail.table.map((row, idx) => (
-                    <tr key={idx} className={results.detectedMode === idx + 1 ? 'bg-cyan-950/50 text-cyan-200 font-semibold' : ''}>
-                      <td className="py-1 pr-3">{row.mode}</td>
-                      <td className="py-1 pr-3 text-cyan-400">{row.res}</td>
-                      <td className="py-1">{row.desc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {activeDetail.layoutNote && (
-            <div className="flex items-start gap-2 p-2 bg-slate-950/90 border border-slate-800 rounded text-[10px] text-slate-400">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <div>
-                <strong className="text-slate-200">Рекомендация по трассировке платы (PCB Layout):</strong> {activeDetail.layoutNote}
+          <span className="text-[11px] text-cyan-400 font-mono">
+            Выбран: {pinsList.find((p) => p.key === selectedPinOrPart)?.label || selectedPinOrPart}
+          </span>
+        </div>
+
+        {/* Кнопки быстрого выбора пина */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {pinsList.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => setSelectedPinOrPart(p.key)}
+              className={`px-2.5 py-1.5 rounded text-xs font-mono transition-all border ${
+                selectedPinOrPart === p.key
+                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 font-bold shadow-sm'
+                  : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700 hover:bg-slate-800'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Развернутое описание выбранного пина, формулы и рекомендации */}
+        {activeDetail && (
+          <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 font-mono font-bold text-xs border border-cyan-800">
+                  {activeDetail.pin}
+                </span>
+                <h3 className="font-semibold text-white text-sm">{activeDetail.title}</h3>
+              </div>
+              <div className="font-mono text-cyan-300 font-bold bg-slate-950 px-2.5 py-1 rounded border border-slate-800">
+                {activeDetail.value}
               </div>
             </div>
-          )}
-        </div>
-      )}
+
+            {activeDetail.formula && (
+              <div className="p-2 bg-slate-950/70 border border-slate-800 rounded font-mono text-[11px] text-cyan-300">
+                Формула из даташита: <strong className="text-white">{activeDetail.formula}</strong>
+              </div>
+            )}
+
+            <p className="text-slate-300 text-[11px] leading-relaxed">{activeDetail.detail}</p>
+
+            {activeDetail.table && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-[11px] font-mono border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-slate-400">
+                      <th className="py-1 pr-3">Режим</th>
+                      <th className="py-1 pr-3">Резистор R_MODE</th>
+                      <th className="py-1">Поведение микросхемы</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                    {activeDetail.table.map((row, idx) => (
+                      <tr
+                        key={idx}
+                        className={results.detectedMode === idx + 1 ? 'bg-cyan-950/50 text-cyan-200 font-semibold' : ''}
+                      >
+                        <td className="py-1 pr-3">{row.mode}</td>
+                        <td className="py-1 pr-3 text-cyan-400">{row.res}</td>
+                        <td className="py-1">{row.desc}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {activeDetail.layoutNote && (
+              <div className="flex items-start gap-2 p-2.5 bg-slate-950/90 border border-slate-800 rounded text-[11px] text-slate-400">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="text-slate-200">Рекомендация по трассировке платы (PCB Layout):</strong>{' '}
+                  {activeDetail.layoutNote}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

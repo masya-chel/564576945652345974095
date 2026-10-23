@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Upload, FileCode2, RotateCcw } from 'lucide-react';
+import { Download, Upload, RotateCcw } from 'lucide-react';
 import { PresetProfile } from '../types/calculator';
 import { PRESET_PROFILES } from '../utils/presets';
 
@@ -8,7 +8,6 @@ interface HeaderProps {
   setActiveTab: (tab: 'schematic' | 'bom' | 'analysis') => void;
   selectedPresetId: string;
   onSelectPreset: (preset: PresetProfile) => void;
-  onOpenPythonModal: () => void;
   onExportJson: () => void;
   onImportJsonClick: () => void;
   onResetDefaults: () => void;
@@ -19,7 +18,6 @@ export const Header: React.FC<HeaderProps> = ({
   setActiveTab,
   selectedPresetId,
   onSelectPreset,
-  onOpenPythonModal,
   onExportJson,
   onImportJsonClick,
   onResetDefaults,
@@ -121,34 +119,6 @@ export const Header: React.FC<HeaderProps> = ({
           <span>Сохранить JSON</span>
         </button>
 
-        <button
-          type="button"
-          onClick={onOpenPythonModal}
-          className="flex items-center gap-2 px-3 py-1.5 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition-colors whitespace-nowrap shadow-sm"
-        >
-          <FileCode2 className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Python скрипт</span>
-        </button>
-
-        <a
-          href="/sic461-calculator-standalone.html"
-          download="sic461-calculator-standalone.html"
-          title="Скачать единый автономный HTML файл — работает в любом браузере офлайн без Node.js и без установки программ"
-          className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-md transition-colors whitespace-nowrap shadow-sm"
-        >
-          <Download className="w-3.5 h-3.5" />
-          <span>Скачать автономный HTML</span>
-        </a>
-
-        <a
-          href="/sic461-calculator.zip"
-          download="sic461-calculator.zip"
-          title="Скачать исходный код проекта в ZIP архиве"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-md transition-colors whitespace-nowrap border border-slate-700"
-        >
-          <Download className="w-3.5 h-3.5 text-slate-400" />
-          <span>ZIP</span>
-        </a>
 
         <button
           type="button"

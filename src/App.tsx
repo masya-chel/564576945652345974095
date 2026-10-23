@@ -7,7 +7,6 @@ import { InputPanel } from './components/InputPanel';
 import { SchematicView } from './components/SchematicView';
 import { BomTable } from './components/BomTable';
 import { WaveformChart } from './components/WaveformChart';
-import { PythonExportModal } from './components/PythonExportModal';
 import { CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
 export default function App() {
@@ -20,7 +19,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'schematic' | 'bom' | 'analysis'>(
     'schematic'
   );
-  const [isPythonModalOpen, setIsPythonModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -294,7 +292,6 @@ export default function App() {
         setActiveTab={setActiveTab}
         selectedPresetId={selectedPresetId}
         onSelectPreset={handleSelectPreset}
-        onOpenPythonModal={() => setIsPythonModalOpen(true)}
         onExportJson={handleExportJson}
         onImportJsonClick={handleImportJsonClick}
         onResetDefaults={handleResetDefaults}
@@ -346,12 +343,6 @@ export default function App() {
         )}
       </div>
 
-      {/* Standalone Python Script Modal */}
-      <PythonExportModal
-        isOpen={isPythonModalOpen}
-        onClose={() => setIsPythonModalOpen(false)}
-        inputs={inputs}
-      />
 
       {/* Notification Toast */}
       {toastMessage && (
