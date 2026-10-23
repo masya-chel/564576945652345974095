@@ -131,13 +131,23 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         <a
-          href="/sic461-calculator.zip"
-          download="sic461-calculator.zip"
-          title="Скачать полный проект в ZIP архиве для локального запуска"
-          className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-md transition-colors whitespace-nowrap shadow-sm"
+          href="/sic461-calculator-standalone.html"
+          download="sic461-calculator-standalone.html"
+          title="Скачать единый автономный HTML файл — работает в любом браузере офлайн без Node.js и без установки программ"
+          className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-md transition-colors whitespace-nowrap shadow-sm"
         >
           <Download className="w-3.5 h-3.5" />
-          <span>Скачать ZIP архив</span>
+          <span>Скачать автономный HTML</span>
+        </a>
+
+        <a
+          href="/sic461-calculator.zip"
+          download="sic461-calculator.zip"
+          title="Скачать исходный код проекта в ZIP архиве"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-md transition-colors whitespace-nowrap border border-slate-700"
+        >
+          <Download className="w-3.5 h-3.5 text-slate-400" />
+          <span>ZIP</span>
         </a>
 
         <button
